@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.lockchat.app-debug-86:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.lockchat.app-main-88:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-debug-86:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-main-88:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.lockchat.app-debug-86:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.lockchat.app-main-88:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-debug-86:/xml_data_extraction_rules.xml.flat",
+        "source": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-main-88:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-debug-86:/xml_device_filter.xml.flat",
+        "source": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-main-88:/xml/device_filter.xml"
+    },
+    {
+        "merged": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-debug-86:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/home/tempmufdl28/.gradle/daemon/9.0.0/com.lockchat.app-main-88:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    }
+]

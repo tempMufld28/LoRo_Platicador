@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#000000</color>
+    <string name="app_name">Lock-Chat</string>
+    <string name="app_version">Lock-Chat v0.8.7</string>
+    <string name="btn_back">Atrás</string>
+    <string name="btn_create_identity">Crear identidad</string>
+    <string name="btn_next">Siguiente</string>
+    <string name="btn_start_ping">▶  INICIAR PING</string>
+    <string name="btn_stop_ping">⬛  DETENER PING</string>
+    <string name="btn_unlock">Desbloquear</string>
+    <string name="channel_info">Canal cifrado · LoRa 915MHz · SF12</string>
+    <string name="dark_mode_desc">Interfaz terminal oscura</string>
+    <string name="dark_mode_label">Modo oscuro</string>
+    <string name="filter_all">TODOS</string>
+    <string name="filter_unread">NO LEÍDOS</string>
+    <string name="input_placeholder">> escribe un mensaje...</string>
+    <string name="login_subtitle">Ingresa tu PIN para desbloquear</string>
+    <string name="login_title">Lock-Chat</string>
+    <string name="onboarding_identity_body">Define tu nombre visible en la red y un nombre privado solo tú verás.</string>
+    <string name="onboarding_identity_title">Tu identidad mesh</string>
+    <string name="onboarding_pin_body">Tu PIN cifra la base de datos local. Sin él, los mensajes son ilegibles.</string>
+    <string name="onboarding_pin_title">Protege tu identidad</string>
+    <string name="onboarding_welcome_body">Red de mensajería cifrada punto a punto sobre LoRa 915 MHz y Bluetooth Mesh. Sin servidores. Sin metadatos. Solo tú y tus contactos.</string>
+    <string name="onboarding_welcome_title">Bienvenido a Lock-Chat</string>
+    <string name="ping_subtitle">Prueba de latencia con contacto seleccionado</string>
+    <string name="ping_title">PING DE NODO</string>
+    <string name="profile_subtitle">Identidad en la red mesh</string>
+    <string name="profile_title">PERFIL / CONFIG</string>
+    <string name="qr_desc">Comparte tu identidad mesh</string>
+    <string name="qr_label">Mi código QR</string>
+    <string name="scan_qr_desc">Agregar contacto con cámara</string>
+    <string name="scan_qr_label">Escanear QR</string>
+    <string name="search_placeholder">buscar contacto...</string>
+    <string name="section_add_contact">AGREGAR CONTACTO</string>
+    <string name="section_appearance">APARIENCIA</string>
+    <string name="section_identity">IDENTIDAD</string>
+    <string name="section_node_info">INFO DEL NODO</string>
+    <style name="Theme.LockChat" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+    <style name="Theme.LockChat.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.LockChat</item>
+    </style>
+</resources>

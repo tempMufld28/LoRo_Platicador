@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.lockchat.app-mergeDebugResources-84:/values-hdpi-v4/values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "/home/tempmufdl28/.gradle/caches/9.0.0/transforms/7aa90bea6dbd95cda5b6cd14e771b0b2/transformed/appcompat-1.7.0/res/values-hdpi-v4/values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    }
+                }
+            ]
+        }
+    ]
+}

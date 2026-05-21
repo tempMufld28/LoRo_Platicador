@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Filtro de dispositivos USB para ESP32 (Fase 3).
+    Detecta los chips UART más comunes en placas ESP32.
+-->
+<resources>
+    <!-- CP2102 (Silicon Labs) — el más común en ESP32 DevKit -->
+    <usb-device vendor-id="4292" product-id="60000" />
+    <!-- CH340 / CH341 (Chinese clone) -->
+    <usb-device vendor-id="6790" product-id="29987" />
+    <!-- FTDI FT232 -->
+    <usb-device vendor-id="1027" product-id="24577" />
+</resources>

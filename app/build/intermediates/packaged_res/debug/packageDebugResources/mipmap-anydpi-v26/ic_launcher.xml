@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@android:color/black" />
+    <foreground>
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <!-- Terminal speech bubble container with green border -->
+            <path
+                android:fillColor="#050F05"
+                android:strokeColor="#00FF41"
+                android:strokeWidth="3"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"
+                android:pathData="M 30,22 H 80 A 8,8 0 0 1 88,30 V 68 A 8,8 0 0 1 80,76 H 42 L 28,88 C 26,90 24,89 25,86 L 28,76 A 8,8 0 0 1 22,68 V 30 A 8,8 0 0 1 30,22 Z" />
+
+            <!-- Prompt symbol ">" -->
+            <path
+                android:strokeColor="#00FF41"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round"
+                android:pathData="M 30,34 L 34,37 L 30,40" />
+
+            <!-- text: "msg send success" -->
+            <path
+                android:strokeColor="#80FF90"
+                android:strokeWidth="2.5"
+                android:strokeLineCap="round"
+                android:pathData="M 39,37 H 78" />
+
+            <!-- text: "[2024-04-05 14:22]" -->
+            <path
+                android:strokeColor="#80FF90"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M 30,45 H 74" />
+
+            <!-- text: "[2024-04-05 14:22]" -->
+            <path
+                android:strokeColor="#80FF90"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M 30,52 H 74" />
+
+            <!-- prompt prefix: "lock@chat:~$" line 1 -->
+            <path
+                android:strokeColor="#00FF41"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M 30,59 H 68" />
+
+            <!-- prompt prefix: "lock@chat:~$" line 2 -->
+            <path
+                android:strokeColor="#00FF41"
+                android:strokeWidth="2"
+                android:strokeLineCap="round"
+                android:pathData="M 30,66 H 60" />
+        </vector>
+    </foreground>
+</adaptive-icon>
