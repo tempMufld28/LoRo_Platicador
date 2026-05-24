@@ -13,12 +13,13 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
- * Módulo Hilt que vincula interfaces de Repository con implementaciones reales.
+ * Módulo Hilt que vincula interfaces de Repository.
  *
  * Stubs eliminados completamente — todo apunta a implementaciones Room/DataStore.
  * AuthRepository, ConversationRepository, NodeRepository, PingRepository:
- *   manejados directamente por TransportManager y ViewModels — interfaces eliminadas.
+ *   manejados directamente por TransportManager y ViewModels.
  */
+
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {

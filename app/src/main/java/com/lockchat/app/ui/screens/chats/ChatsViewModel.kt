@@ -46,8 +46,9 @@ class ChatsViewModel @Inject constructor(
         contactRepository.observeAll(),
         _filter,
         transportManager.activeTransport,
-        transportManager.connectedPeers
-    ) { contacts, filter, transport, connectedPeers ->
+        transportManager.connectedPeers,
+        transportManager.loRaUsbTransport.isLoRaAvailable
+    ) { contacts, filter, transport, connectedPeers, loraAvailable ->
         // Construir ConversationUi para cada contacto
         val conversations = contacts.map { contact ->
             val lastMsg = mensajeDao.lastMessage(contact.nodeId)
@@ -62,7 +63,9 @@ class ChatsViewModel @Inject constructor(
                 lastMessagePreview = lastMsg?.content ?: "Sin mensajes aún",
                 lastMessageTime    = lastMsg?.let { timeFormat.format(Date(it.timestamp)) } ?: "",
                 unreadCount        = unread,
-                isOnline           = isOnline
+                isOnline           = isOnline,
+                isBleAvailable     = isOnline,
+                isLoraAvailable    = loraAvailable
             )
         }.sortedByDescending { conv ->
             contacts.find { it.nodeId == conv.contactId }?.lastSeen ?: 0L

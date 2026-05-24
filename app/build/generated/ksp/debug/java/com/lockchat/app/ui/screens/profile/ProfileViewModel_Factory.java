@@ -1,5 +1,6 @@
 package com.lockchat.app.ui.screens.profile;
 
+import com.lockchat.app.data.local.ThemePreferences;
 import com.lockchat.app.domain.repository.ContactRepository;
 import com.lockchat.app.domain.repository.IdentityRepository;
 import dagger.internal.DaggerGenerated;
@@ -28,25 +29,30 @@ public final class ProfileViewModel_Factory implements Factory<ProfileViewModel>
 
   private final Provider<ContactRepository> contactRepositoryProvider;
 
+  private final Provider<ThemePreferences> themePreferencesProvider;
+
   public ProfileViewModel_Factory(Provider<IdentityRepository> identityRepositoryProvider,
-      Provider<ContactRepository> contactRepositoryProvider) {
+      Provider<ContactRepository> contactRepositoryProvider,
+      Provider<ThemePreferences> themePreferencesProvider) {
     this.identityRepositoryProvider = identityRepositoryProvider;
     this.contactRepositoryProvider = contactRepositoryProvider;
+    this.themePreferencesProvider = themePreferencesProvider;
   }
 
   @Override
   public ProfileViewModel get() {
-    return newInstance(identityRepositoryProvider.get(), contactRepositoryProvider.get());
+    return newInstance(identityRepositoryProvider.get(), contactRepositoryProvider.get(), themePreferencesProvider.get());
   }
 
   public static ProfileViewModel_Factory create(
       Provider<IdentityRepository> identityRepositoryProvider,
-      Provider<ContactRepository> contactRepositoryProvider) {
-    return new ProfileViewModel_Factory(identityRepositoryProvider, contactRepositoryProvider);
+      Provider<ContactRepository> contactRepositoryProvider,
+      Provider<ThemePreferences> themePreferencesProvider) {
+    return new ProfileViewModel_Factory(identityRepositoryProvider, contactRepositoryProvider, themePreferencesProvider);
   }
 
   public static ProfileViewModel newInstance(IdentityRepository identityRepository,
-      ContactRepository contactRepository) {
-    return new ProfileViewModel(identityRepository, contactRepository);
+      ContactRepository contactRepository, ThemePreferences themePreferences) {
+    return new ProfileViewModel(identityRepository, contactRepository, themePreferences);
   }
 }

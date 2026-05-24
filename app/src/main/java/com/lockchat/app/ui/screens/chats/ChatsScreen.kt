@@ -50,6 +50,15 @@ fun ChatsScreen(
                 Icon(Icons.Default.Add, contentDescription = "Agregar contacto")
             }
         },
+        bottomBar = {
+            BottomNavBar(
+                currentRoute   = "chats",
+                unreadCount    = state.totalUnread,
+                onChatsClick   = {},
+                onPingClick    = onNavigateToPing,
+                onProfileClick = onNavigateToProfile
+            )
+        },
         containerColor = LockChatTheme.colors.background
     ) { innerPadding ->
         Column(
@@ -168,14 +177,6 @@ fun ChatsScreen(
                     }
                 }
             }
-
-            BottomNavBar(
-                currentRoute   = "chats",
-                unreadCount    = state.totalUnread,
-                onChatsClick   = {},
-                onPingClick    = onNavigateToPing,
-                onProfileClick = onNavigateToProfile
-            )
         }
     }
 }
@@ -260,8 +261,38 @@ fun ConversationItem(conversation: ConversationUi, onClick: () -> Unit) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
-                Text(conversation.handle, style = MaterialTheme.typography.titleSmall,
-                    color = LockChatTheme.colors.onBackground, fontWeight = FontWeight.SemiBold)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.weight(1f, fill = false)
+                ) {
+                    Text(
+                        text = conversation.handle,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = LockChatTheme.colors.onBackground,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (conversation.isBleAvailable) {
+                        Text(
+                            text = "[BLE]",
+                            color = LockChatTheme.colors.primary,
+                            fontFamily = TerminalFontFamily,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    if (conversation.isLoraAvailable) {
+                        Text(
+                            text = "[LoRa]",
+                            color = LockChatTheme.colors.primary,
+                            fontFamily = TerminalFontFamily,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
                 Text(conversation.lastMessageTime, style = MaterialTheme.typography.labelSmall,
                     color = LockChatTheme.colors.outline)
             }

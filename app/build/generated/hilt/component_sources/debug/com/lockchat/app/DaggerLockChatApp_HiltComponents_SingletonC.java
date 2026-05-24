@@ -13,6 +13,7 @@ import androidx.work.ListenableWorker;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.lockchat.app.data.local.AppDatabase;
 import com.lockchat.app.data.local.IdentityDataStore;
+import com.lockchat.app.data.local.ThemePreferences;
 import com.lockchat.app.data.local.dao.ContactoDao;
 import com.lockchat.app.data.local.dao.MensajeDao;
 import com.lockchat.app.data.repository.ContactoRepositoryImpl;
@@ -390,6 +391,7 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
 
     @Override
     public void injectMainActivity(MainActivity mainActivity) {
+      injectMainActivity2(mainActivity);
     }
 
     @Override
@@ -417,12 +419,14 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
       return new ViewCBuilder(singletonCImpl, activityRetainedCImpl, activityCImpl);
     }
 
+    @CanIgnoreReturnValue
+    private MainActivity injectMainActivity2(MainActivity instance) {
+      MainActivity_MembersInjector.injectThemePreferences(instance, singletonCImpl.themePreferencesProvider.get());
+      return instance;
+    }
+
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_lockchat_app_ui_screens_addcontact_AddContactViewModel = "com.lockchat.app.ui.screens.addcontact.AddContactViewModel";
-
-      static String com_lockchat_app_ui_screens_profile_ProfileViewModel = "com.lockchat.app.ui.screens.profile.ProfileViewModel";
-
       static String com_lockchat_app_ui_screens_onboarding_OnboardingViewModel = "com.lockchat.app.ui.screens.onboarding.OnboardingViewModel";
 
       static String com_lockchat_app_ui_screens_chatdetail_ChatDetailViewModel = "com.lockchat.app.ui.screens.chatdetail.ChatDetailViewModel";
@@ -431,11 +435,9 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
 
       static String com_lockchat_app_ui_screens_chats_ChatsViewModel = "com.lockchat.app.ui.screens.chats.ChatsViewModel";
 
-      @KeepFieldType
-      AddContactViewModel com_lockchat_app_ui_screens_addcontact_AddContactViewModel2;
+      static String com_lockchat_app_ui_screens_profile_ProfileViewModel = "com.lockchat.app.ui.screens.profile.ProfileViewModel";
 
-      @KeepFieldType
-      ProfileViewModel com_lockchat_app_ui_screens_profile_ProfileViewModel2;
+      static String com_lockchat_app_ui_screens_addcontact_AddContactViewModel = "com.lockchat.app.ui.screens.addcontact.AddContactViewModel";
 
       @KeepFieldType
       OnboardingViewModel com_lockchat_app_ui_screens_onboarding_OnboardingViewModel2;
@@ -448,6 +450,12 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
 
       @KeepFieldType
       ChatsViewModel com_lockchat_app_ui_screens_chats_ChatsViewModel2;
+
+      @KeepFieldType
+      ProfileViewModel com_lockchat_app_ui_screens_profile_ProfileViewModel2;
+
+      @KeepFieldType
+      AddContactViewModel com_lockchat_app_ui_screens_addcontact_AddContactViewModel2;
     }
   }
 
@@ -505,35 +513,35 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_lockchat_app_ui_screens_profile_ProfileViewModel = "com.lockchat.app.ui.screens.profile.ProfileViewModel";
-
       static String com_lockchat_app_ui_screens_chats_ChatsViewModel = "com.lockchat.app.ui.screens.chats.ChatsViewModel";
-
-      static String com_lockchat_app_ui_screens_addcontact_AddContactViewModel = "com.lockchat.app.ui.screens.addcontact.AddContactViewModel";
-
-      static String com_lockchat_app_ui_screens_onboarding_OnboardingViewModel = "com.lockchat.app.ui.screens.onboarding.OnboardingViewModel";
-
-      static String com_lockchat_app_ui_screens_chatdetail_ChatDetailViewModel = "com.lockchat.app.ui.screens.chatdetail.ChatDetailViewModel";
 
       static String com_lockchat_app_ui_screens_ping_PingViewModel = "com.lockchat.app.ui.screens.ping.PingViewModel";
 
-      @KeepFieldType
-      ProfileViewModel com_lockchat_app_ui_screens_profile_ProfileViewModel2;
+      static String com_lockchat_app_ui_screens_addcontact_AddContactViewModel = "com.lockchat.app.ui.screens.addcontact.AddContactViewModel";
+
+      static String com_lockchat_app_ui_screens_chatdetail_ChatDetailViewModel = "com.lockchat.app.ui.screens.chatdetail.ChatDetailViewModel";
+
+      static String com_lockchat_app_ui_screens_profile_ProfileViewModel = "com.lockchat.app.ui.screens.profile.ProfileViewModel";
+
+      static String com_lockchat_app_ui_screens_onboarding_OnboardingViewModel = "com.lockchat.app.ui.screens.onboarding.OnboardingViewModel";
 
       @KeepFieldType
       ChatsViewModel com_lockchat_app_ui_screens_chats_ChatsViewModel2;
 
       @KeepFieldType
-      AddContactViewModel com_lockchat_app_ui_screens_addcontact_AddContactViewModel2;
+      PingViewModel com_lockchat_app_ui_screens_ping_PingViewModel2;
 
       @KeepFieldType
-      OnboardingViewModel com_lockchat_app_ui_screens_onboarding_OnboardingViewModel2;
+      AddContactViewModel com_lockchat_app_ui_screens_addcontact_AddContactViewModel2;
 
       @KeepFieldType
       ChatDetailViewModel com_lockchat_app_ui_screens_chatdetail_ChatDetailViewModel2;
 
       @KeepFieldType
-      PingViewModel com_lockchat_app_ui_screens_ping_PingViewModel2;
+      ProfileViewModel com_lockchat_app_ui_screens_profile_ProfileViewModel2;
+
+      @KeepFieldType
+      OnboardingViewModel com_lockchat_app_ui_screens_onboarding_OnboardingViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -573,7 +581,7 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
           return (T) new PingViewModel(singletonCImpl.transportManagerProvider.get(), singletonCImpl.contactoRepositoryImplProvider.get());
 
           case 5: // com.lockchat.app.ui.screens.profile.ProfileViewModel 
-          return (T) new ProfileViewModel(singletonCImpl.identityDataStoreProvider.get(), singletonCImpl.contactoRepositoryImplProvider.get());
+          return (T) new ProfileViewModel(singletonCImpl.identityDataStoreProvider.get(), singletonCImpl.contactoRepositoryImplProvider.get(), singletonCImpl.themePreferencesProvider.get());
 
           default: throw new AssertionError(id);
         }
@@ -684,6 +692,8 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
 
     private Provider<TransportManager> transportManagerProvider;
 
+    private Provider<ThemePreferences> themePreferencesProvider;
+
     private SingletonCImpl(ApplicationContextModule applicationContextModuleParam) {
       this.applicationContextModule = applicationContextModuleParam;
       initialize(applicationContextModuleParam);
@@ -705,6 +715,7 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
       this.provideContactoDaoProvider = DoubleCheck.provider(new SwitchingProvider<ContactoDao>(singletonCImpl, 8));
       this.contactoRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<ContactoRepositoryImpl>(singletonCImpl, 7));
       this.transportManagerProvider = DoubleCheck.provider(new SwitchingProvider<TransportManager>(singletonCImpl, 0));
+      this.themePreferencesProvider = DoubleCheck.provider(new SwitchingProvider<ThemePreferences>(singletonCImpl, 9));
     }
 
     @Override
@@ -784,6 +795,9 @@ public final class DaggerLockChatApp_HiltComponents_SingletonC {
 
           case 8: // com.lockchat.app.data.local.dao.ContactoDao 
           return (T) AppModule_ProvideContactoDaoFactory.provideContactoDao(singletonCImpl.provideAppDatabaseProvider.get());
+
+          case 9: // com.lockchat.app.data.local.ThemePreferences 
+          return (T) new ThemePreferences(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           default: throw new AssertionError(id);
         }

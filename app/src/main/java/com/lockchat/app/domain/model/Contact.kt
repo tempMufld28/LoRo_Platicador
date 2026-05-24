@@ -34,7 +34,9 @@ data class ConversationUi(
     val lastMessagePreview: String,
     val lastMessageTime: String,
     val unreadCount: Int,
-    val isOnline: Boolean
+    val isOnline: Boolean,
+    val isBleAvailable: Boolean = false,
+    val isLoraAvailable: Boolean = false
 )
 
 enum class ChatFilter { TODOS, NO_LEIDOS }

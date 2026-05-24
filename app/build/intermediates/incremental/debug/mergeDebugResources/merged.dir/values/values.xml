@@ -1955,9 +1955,8 @@
     <string name="btn_back">Atrás</string>
     <string name="btn_create_identity">Crear identidad</string>
     <string name="btn_next">Siguiente</string>
-    <string name="btn_start_ping">▶  INICIAR PING</string>
-    <string name="btn_stop_ping">⬛  DETENER PING</string>
-    <string name="btn_unlock">Desbloquear</string>
+    <string name="btn_start_ping">INICIAR PING</string>
+    <string name="btn_stop_ping">DETENER PING</string>
     <string name="call_notification_answer_action">Answer</string>
     <string name="call_notification_answer_video_action">Video</string>
     <string name="call_notification_decline_action">Decline</string>
@@ -1965,7 +1964,7 @@
     <string name="call_notification_incoming_text">Incoming call</string>
     <string name="call_notification_ongoing_text">Ongoing call</string>
     <string name="call_notification_screening_text">Screening an incoming call</string>
-    <string name="channel_info">Canal cifrado · LoRa 915MHz · SF12</string>
+    <string name="channel_info">Canal · LoRa 915MHz · SF12</string>
     <string name="character_counter_content_description">Characters entered %1$d of %2$d</string>
     <string name="character_counter_overflowed_content_description">Character limit exceeded %1$d of %2$d</string>
     <string name="character_counter_pattern" translatable="false">%1$d/%2$d</string>
@@ -2002,16 +2001,14 @@
     <string name="exposed_dropdown_menu_content_description">Show dropdown menu</string>
     <string name="fab_transformation_scrim_behavior" translatable="false">com.google.android.material.transformation.FabTransformationScrimBehavior</string>
     <string name="fab_transformation_sheet_behavior" translatable="false">com.google.android.material.transformation.FabTransformationSheetBehavior</string>
-    <string name="filter_all">TODOS</string>
-    <string name="filter_unread">NO LEÍDOS</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_unread">No leídos</string>
     <string name="hide_bottom_view_on_scroll_behavior" translatable="false">com.google.android.material.behavior.HideBottomViewOnScrollBehavior</string>
     <string description="Content description for an icon that appears in the title area of a dialog" name="icon_content_description">Dialog Icon</string>
     <string name="in_progress">In progress</string>
     <string name="indeterminate">Partially checked</string>
-    <string name="input_placeholder">> escribe un mensaje...</string>
+    <string name="input_placeholder">> Escribe un mensaje...</string>
     <string name="item_view_role_description">Tab</string>
-    <string name="login_subtitle">Ingresa tu PIN para desbloquear</string>
-    <string name="login_title">Lock-Chat</string>
     <string name="m3_exceed_max_badge_text_suffix" translatable="false"><ns2:g example="Some te" id="part of a long text">%1$s</ns2:g><ns2:g example="…" id="suffix">%2$s</ns2:g></string>
     <string name="m3_ref_typeface_brand_medium" translatable="false">sans-serif-medium</string>
     <string name="m3_ref_typeface_brand_regular" translatable="false">sans-serif</string>
@@ -2182,11 +2179,9 @@
     <string name="not_selected">Not selected</string>
     <string name="off">Off</string>
     <string name="on">On</string>
-    <string name="onboarding_identity_body">Define tu nombre visible en la red y un nombre privado solo tú verás.</string>
-    <string name="onboarding_identity_title">Tu identidad mesh</string>
-    <string name="onboarding_pin_body">Tu PIN cifra la base de datos local. Sin él, los mensajes son ilegibles.</string>
-    <string name="onboarding_pin_title">Protege tu identidad</string>
-    <string name="onboarding_welcome_body">Red de mensajería cifrada punto a punto sobre LoRa 915 MHz y Bluetooth Mesh. Sin servidores. Sin metadatos. Solo tú y tus contactos.</string>
+    <string name="onboarding_identity_body">Define tu nombre visible para tus contactos.</string>
+    <string name="onboarding_identity_title">Tu identidad</string>
+    <string name="onboarding_welcome_body">Red de mensajería. Sin metadatos. Solo tú y tus contactos.</string>
     <string name="onboarding_welcome_title">Bienvenido a Lock-Chat</string>
     <string name="password_toggle_content_description">Show password</string>
     <string name="path_password_eye" translatable="false">M12,4.5C7,4.5 2.73,7.61 1,12c1.73,4.39 6,7.5 11,7.5s9.27,-3.11 11,-7.5c-1.73,-4.39 -6,-7.5 -11,-7.5zM12,17c-2.76,0 -5,-2.24 -5,-5s2.24,-5 5,-5 5,2.24 5,5 -2.24,5 -5,5zM12,9c-1.66,0 -3,1.34 -3,3s1.34,3 3,3 3,-1.34 3,-3 -1.34,-3 -3,-3z</string>
@@ -2195,16 +2190,16 @@
     <string name="path_password_strike_through" translatable="false">M3.27,4.27 L19.74,20.74</string>
     <string name="ping_subtitle">Prueba de latencia con contacto seleccionado</string>
     <string name="ping_title">PING DE NODO</string>
-    <string name="profile_subtitle">Identidad en la red mesh</string>
-    <string name="profile_title">PERFIL / CONFIG</string>
-    <string name="qr_desc">Comparte tu identidad mesh</string>
+    <string name="profile_subtitle">Identidad en la Red</string>
+    <string name="profile_title">PERFIL</string>
+    <string name="qr_desc">Comparte tu identidad</string>
     <string name="qr_label">Mi código QR</string>
     <string name="range_end">"Range end"</string>
     <string name="range_start">"Range start"</string>
-    <string name="scan_qr_desc">Agregar contacto con cámara</string>
+    <string name="scan_qr_desc">Agregar contacto</string>
     <string name="scan_qr_label">Escanear QR</string>
     <string name="search_menu_title">Search</string>
-    <string name="search_placeholder">buscar contacto...</string>
+    <string name="search_placeholder">Buscar contacto...</string>
     <string name="searchbar_scrolling_view_behavior" translatable="false">
     com.google.android.material.search.SearchBar$ScrollingViewBehavior
   </string>

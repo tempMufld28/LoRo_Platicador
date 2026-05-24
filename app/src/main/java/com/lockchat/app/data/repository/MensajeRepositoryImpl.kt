@@ -27,9 +27,10 @@ class MensajeRepositoryImpl @Inject constructor(
             list.map { it.toUi() }
         }
 
-    override suspend fun sendMessage(contactId: String, content: String): Result<Unit> = runCatching {
+    override suspend fun sendMessage(contactId: String, content: String): Result<String> = runCatching {
+        val msgId = UUID.randomUUID().toString()
         val msg = MensajeEntity(
-            msgId         = UUID.randomUUID().toString(),
+            msgId         = msgId,
             contactNodeId = contactId,
             direction     = "OUT",
             content       = content,
@@ -37,6 +38,7 @@ class MensajeRepositoryImpl @Inject constructor(
             status        = "SENDING"
         )
         dao.insert(msg)
+        msgId
     }
 
     /** Actualizar status de un mensaje (llamado por el transport layer) */

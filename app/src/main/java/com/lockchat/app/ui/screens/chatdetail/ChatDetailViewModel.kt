@@ -80,17 +80,28 @@ class ChatDetailViewModel @Inject constructor(
             _isSending.value = true
             _inputText.value = ""
 
-            // 1. Persistir en Room como SENDING
-            mensajeRepository.sendMessage(contactId, content)
+            // 1. Persistir en Room como SENDING — obtener el msgId generado
+            val saveResult = mensajeRepository.sendMessage(contactId, content)
+            val msgId = saveResult.getOrNull()
 
-            // 2. Enviar via transport
-            val result = transportManager.sendMessage(contactId, content)
+            // 2. Enviar via transport (BLE o LoRa)
+            val transportResult = transportManager.sendMessage(contactId, content)
 
-            // 3. Actualizar status
-            result.fold(
+            // 3. Actualizar status en Room según resultado del transport
+            if (msgId != null) {
+                transportResult.fold(
+                    onSuccess = {
+                        mensajeRepository.updateStatus(msgId, MessageStatus.SENT)
+                    },
+                    onFailure = {
+                        mensajeRepository.updateStatus(msgId, MessageStatus.FAILED)
+                    }
+                )
+            }
+
+            // 4. Actualizar UI
+            transportResult.fold(
                 onSuccess = {
-                    // El status se actualiza a SENT — se quedaría en SENDING
-                    // hasta recibir ACK del otro lado en una fase futura
                     _isSending.value = false
                 },
                 onFailure = { e ->

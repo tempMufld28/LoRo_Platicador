@@ -65,15 +65,32 @@ class TransportManager @Inject constructor(
         bleTransport.start()
         _activeTransport.value = TransportUiState.BLE_DIRECT
 
-        // Observar peers BLE descubiertos
+        // Observar peers BLE conectados y actualizar estado online/offline
         scope.launch {
-            bleTransport.discoveredPeers.collect { peers ->
-                _connectedPeers.value = peers.mapValues { it.value.handle }
-                peers.forEach { (nodeId, peerInfo) ->
-                    if (bleTransport.isConnectedTo(nodeId)) {
-                        contactoRepository.updateOnlineStatus(nodeId, true)
-                    }
+            var previousConnectedIds = emptySet<String>()
+            combine(
+                bleTransport.connectedNodeIds,
+                bleTransport.discoveredPeers
+            ) { connectedIds, discovered ->
+                connectedIds to discovered
+            }.collect { (connectedIds, discovered) ->
+                // Mapear solo los nodos REALMENTE conectados
+                val mapped = connectedIds.associateWith { nodeId ->
+                    discovered[nodeId]?.handle ?: "desconocido"
                 }
+                _connectedPeers.value = mapped
+
+                // Nuevos conectados → marcar online
+                (connectedIds - previousConnectedIds).forEach { nodeId ->
+                    contactoRepository.updateOnlineStatus(nodeId, true)
+                }
+
+                // Desconectados → marcar offline
+                (previousConnectedIds - connectedIds).forEach { nodeId ->
+                    contactoRepository.updateOnlineStatus(nodeId, false)
+                }
+
+                previousConnectedIds = connectedIds
             }
         }
 

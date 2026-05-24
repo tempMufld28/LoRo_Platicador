@@ -36,7 +36,7 @@ class ContactoRepositoryImpl @Inject constructor(
 
     override suspend fun updateLastSeen(nodeId: String, timestamp: Long) {
         dao.findById(nodeId)?.let { entity ->
-            dao.insert(entity.copy(lastSeen = timestamp, isOnline = false))
+            dao.insert(entity.copy(lastSeen = timestamp))
         }
     }
 

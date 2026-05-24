@@ -148,6 +148,58 @@ fun ProfileScreen(
             }
         }
 
+        // Apariencia
+        item {
+            val isDarkMode by viewModel.isDarkMode.collectAsStateWithLifecycle()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            ) {
+                Text(
+                    text = "APARIENCIA",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = LockChatTheme.colors.primary,
+                    fontFamily = TerminalFontFamily,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LockChatTheme.colors.surface, RoundedCornerShape(4.dp))
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = "Modo oscuro",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = LockChatTheme.colors.onBackground,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "Interfaz terminal oscura",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = LockChatTheme.colors.outline
+                        )
+                    }
+                    Switch(
+                        checked = isDarkMode,
+                        onCheckedChange = viewModel::onThemeToggle,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = LockChatTheme.colors.primary,
+                            checkedTrackColor = LockChatTheme.colors.primary.copy(alpha = 0.5f),
+                            uncheckedThumbColor = LockChatTheme.colors.outline,
+                            uncheckedTrackColor = LockChatTheme.colors.outline.copy(alpha = 0.2f)
+                        )
+                    )
+                }
+                Spacer(Modifier.height(24.dp))
+            }
+        }
+
         // QR Propio
         item {
             Column(
@@ -250,6 +302,26 @@ fun ProfileScreen(
             onTextChange  = viewModel::onHandleTextChange,
             onConfirm     = viewModel::onHandleSave,
             onDismiss     = viewModel::onDismissEditHandle
+        )
+    }
+
+    // Diálogo de advertencia al cambiar handle
+    if (state.showWarningDialog) {
+        AlertDialog(
+            onDismissRequest = viewModel::onCancelHandleChange,
+            title = { Text("¿Confirmar cambio?", fontFamily = TerminalFontFamily) },
+            text  = { Text("Al cambiar tu nombre de usuario, tus contactos deberán volver a agregarte ya que la conexión en la Red depende de este identificador.") },
+            confirmButton = {
+                TextButton(onClick = viewModel::onConfirmHandleChange) {
+                    Text("CONFIRMAR", color = LockChatTheme.colors.error, fontFamily = TerminalFontFamily)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::onCancelHandleChange) {
+                    Text("CANCELAR", color = LockChatTheme.colors.outline, fontFamily = TerminalFontFamily)
+                }
+            },
+            containerColor = LockChatTheme.colors.surface
         )
     }
 }

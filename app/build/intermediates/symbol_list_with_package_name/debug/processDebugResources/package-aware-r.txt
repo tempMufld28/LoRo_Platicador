@@ -3805,7 +3805,6 @@ string btn_create_identity
 string btn_next
 string btn_start_ping
 string btn_stop_ping
-string btn_unlock
 string call_notification_answer_action
 string call_notification_answer_video_action
 string call_notification_decline_action
@@ -3856,8 +3855,6 @@ string in_progress
 string indeterminate
 string input_placeholder
 string item_view_role_description
-string login_subtitle
-string login_title
 string m3_exceed_max_badge_text_suffix
 string m3_ref_typeface_brand_medium
 string m3_ref_typeface_brand_regular
@@ -4020,8 +4017,6 @@ string off
 string on
 string onboarding_identity_body
 string onboarding_identity_title
-string onboarding_pin_body
-string onboarding_pin_title
 string onboarding_welcome_body
 string onboarding_welcome_title
 string password_toggle_content_description

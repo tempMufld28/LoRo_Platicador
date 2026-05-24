@@ -8,8 +8,10 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+import androidx.compose.material3.lightColorScheme
+
 // ─────────────────────────────────────────────────
-// Material 3 color scheme (oscuro — único modo)
+// Material 3 color schemes (oscuro y claro)
 // ─────────────────────────────────────────────────
 private val TerminalColorScheme = darkColorScheme(
     primary              = Green400,
@@ -37,10 +39,37 @@ private val TerminalColorScheme = darkColorScheme(
     scrim                = Color(0xCC000000)
 )
 
+private val LightColorScheme = lightColorScheme(
+    primary              = Green600,
+    onPrimary            = White,
+    primaryContainer     = Color(0xFFE8F5E9),
+    onPrimaryContainer   = Green900,
+    secondary            = Green600,
+    onSecondary          = White,
+    secondaryContainer   = Color(0xFFF5F5F5),
+    onSecondaryContainer = Black,
+    tertiary             = Color(0xFFB8860B),
+    onTertiary           = White,
+    background           = White,
+    onBackground         = Black,
+    surface              = Color(0xFFF5F5F5),
+    onSurface            = Black,
+    surfaceVariant       = Color(0xFFE5E5E5),
+    onSurfaceVariant     = Color(0xFF333333),
+    error                = Red500,
+    onError              = White,
+    errorContainer       = Color(0xFFFFEBEE),
+    onErrorContainer     = Red500,
+    outline              = Color(0xFF7F7F7F),
+    outlineVariant       = Color(0xFFE5E5E5),
+    scrim                = Color(0xCC000000)
+)
+
 // ─────────────────────────────────────────────────
 // CompositionLocal para los colores semánticos custom
 // ─────────────────────────────────────────────────
 private val LocalLockChatColors = staticCompositionLocalOf { LockChatDarkColors }
+val LocalIsDarkTheme = staticCompositionLocalOf { true }
 
 // ─────────────────────────────────────────────────
 // Objeto de acceso global al tema
@@ -51,6 +80,11 @@ object LockChatTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalLockChatColors.current
+        
+    val isDark: Boolean
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalIsDarkTheme.current
 }
 
 // ─────────────────────────────────────────────────
@@ -58,11 +92,18 @@ object LockChatTheme {
 // ─────────────────────────────────────────────────
 @Composable
 fun LockChatTheme(
+    isDarkMode: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(LocalLockChatColors provides LockChatDarkColors) {
+    val colors = if (isDarkMode) LockChatDarkColors else LockChatLightColors
+    val scheme = if (isDarkMode) TerminalColorScheme else LightColorScheme
+
+    CompositionLocalProvider(
+        LocalLockChatColors provides colors,
+        LocalIsDarkTheme provides isDarkMode
+    ) {
         MaterialTheme(
-            colorScheme = TerminalColorScheme,
+            colorScheme = scheme,
             typography  = LockChatTypography,
             content     = content
         )

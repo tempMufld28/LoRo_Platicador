@@ -30,8 +30,8 @@ class OnboardingViewModel @Inject constructor(
     fun hasIdentity(): Boolean = identityRepository.hasIdentity()
 
     fun onHandleChange(value: String) {
-        // Solo minúsculas, números y guion bajo; máx 32 chars
-        val clean = value.lowercase().filter { it.isLetterOrDigit() || it == '_' }.take(32)
+        // Solo minúsculas, números y guion bajo; máx 10 chars
+        val clean = value.lowercase().filter { it.isLetterOrDigit() || it == '_' }.take(10)
         _uiState.update { it.copy(handle = clean, handleError = null) }
     }
 
@@ -55,9 +55,8 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun validateHandle(handle: String): String? {
-        if (handle.isBlank()) return "El handle no puede estar vacío"
-        if (handle.length < 3)  return "Mínimo 3 caracteres"
-        if (handle.length > 32) return "Máximo 32 caracteres"
+        if (handle.isBlank()) return "El nombre de usuario no puede estar vacío"
+        if (handle.length != 10) return "Debe tener exactamente 10 caracteres"
         if (!handle.matches(Regex("[a-z0-9_]+"))) return "Solo letras minúsculas, números y _"
         return null
     }

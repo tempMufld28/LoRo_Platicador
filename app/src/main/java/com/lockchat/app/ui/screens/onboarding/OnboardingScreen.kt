@@ -18,9 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.lockchat.app.ui.components.SignalWavesIcon
 import com.lockchat.app.ui.theme.LockChatTheme
 import com.lockchat.app.ui.theme.TerminalFontFamily
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel = hiltViewModel(),
@@ -29,147 +34,234 @@ fun OnboardingScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
 
+    val multiplePermissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.BLUETOOTH_SCAN,
+            android.Manifest.permission.BLUETOOTH_CONNECT,
+            android.Manifest.permission.BLUETOOTH_ADVERTISE
+        )
+    )
+
+    var showPermissionsStep by remember { mutableStateOf(false) }
+
     LaunchedEffect(state.isComplete) {
-        if (state.isComplete) onIdentityCreated()
+        if (state.isComplete) {
+            if (multiplePermissionsState.allPermissionsGranted) {
+                onIdentityCreated()
+            } else {
+                showPermissionsStep = true
+            }
+        }
     }
 
+    LaunchedEffect(multiplePermissionsState.allPermissionsGranted) {
+        if (state.isComplete && multiplePermissionsState.allPermissionsGranted) {
+            onIdentityCreated()
+        }
+    }
+
+    if (showPermissionsStep) {
+        PermissionsRequestScreen(
+            permissionsState = multiplePermissionsState
+        )
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(LockChatTheme.colors.background)
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Logo / ícono animado pixelado
+            SignalWavesIcon(
+                size = 80.dp,
+                animate = true
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text       = "Lock-Chat",
+                style      = MaterialTheme.typography.displaySmall,
+                color      = LockChatTheme.colors.onBackground,
+                textAlign  = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text       = "BLE · LoRa Red",
+                style      = MaterialTheme.typography.labelMedium,
+                color      = LockChatTheme.colors.primary,
+                textAlign  = TextAlign.Center,
+                fontFamily = TerminalFontFamily
+            )
+
+            Spacer(Modifier.height(56.dp))
+
+            // ── Handle ──────────────────────────────────────
+            Text(
+                text  = "Elige tu nombre de usuario",
+                style = MaterialTheme.typography.labelSmall,
+                color = LockChatTheme.colors.primary,
+                fontFamily = TerminalFontFamily,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(6.dp))
+
+            OutlinedTextField(
+                value         = state.handle,
+                onValueChange = viewModel::onHandleChange,
+                modifier      = Modifier.fillMaxWidth(),
+                placeholder   = {
+                    Text(
+                        "> ghost_77",
+                        color      = LockChatTheme.colors.outline,
+                        fontFamily = TerminalFontFamily,
+                        fontSize   = 14.sp
+                    )
+                },
+                isError    = state.handleError != null,
+                singleLine = true,
+                shape      = RoundedCornerShape(4.dp),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Ascii,
+                    imeAction    = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboard?.hide()
+                        viewModel.onCreateIdentity()
+                    }
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor      = LockChatTheme.colors.primary,
+                    unfocusedBorderColor    = LockChatTheme.colors.outline,
+                    errorBorderColor        = LockChatTheme.colors.error,
+                    focusedTextColor        = LockChatTheme.colors.onBackground,
+                    unfocusedTextColor      = LockChatTheme.colors.onBackground,
+                    cursorColor             = LockChatTheme.colors.primary,
+                    focusedContainerColor   = LockChatTheme.colors.surface,
+                    unfocusedContainerColor = LockChatTheme.colors.surface
+                ),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = TerminalFontFamily)
+            )
+
+            if (state.handleError != null) {
+                Text(
+                    text     = state.handleError!!,
+                    color    = LockChatTheme.colors.error,
+                    style    = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                text  = "Visible para todos en la red. Solo letras minúsculas, números y _",
+                style = MaterialTheme.typography.bodySmall,
+                color = LockChatTheme.colors.outline,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(40.dp))
+
+            // ── Botón crear ──────────────────────────────────
+            Button(
+                onClick  = {
+                    keyboard?.hide()
+                    viewModel.onCreateIdentity()
+                },
+                enabled  = state.handle.isNotBlank() && !state.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape  = RoundedCornerShape(4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = LockChatTheme.colors.primary,
+                    contentColor   = LockChatTheme.colors.onPrimary
+                )
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier    = Modifier.size(20.dp),
+                        color       = LockChatTheme.colors.onPrimary,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text       = "ENTRAR A LA RED",
+                        fontFamily = TerminalFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize   = 15.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun PermissionsRequestScreen(
+    permissionsState: MultiplePermissionsState
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(LockChatTheme.colors.background)
-            .padding(horizontal = 32.dp),
+            .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Logo / ícono
+        // Pixelated signal icon animates while asking for permissions
+        SignalWavesIcon(
+            size = 80.dp,
+            animate = true
+        )
+
+        Spacer(Modifier.height(24.dp))
+
         Text(
-            text       = "(●)",
+            text       = "PERMISOS REQUERIDOS",
+            style      = MaterialTheme.typography.titleMedium,
             color      = LockChatTheme.colors.primary,
-            fontSize   = 72.sp,
-            textAlign  = TextAlign.Center,
-            fontFamily = TerminalFontFamily
+            fontFamily = TerminalFontFamily,
+            textAlign  = TextAlign.Center
         )
 
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text       = "Lock-Chat",
-            style      = MaterialTheme.typography.displaySmall,
+            text       = "Para operar como un nodo en la Red descentralizada, Lock-Chat necesita acceder a:\n\n" +
+                         "1. [CÁMARA]\n   Para escanear códigos QR de tus contactos.\n\n" +
+                         "2. [BLUETOOTH]\n   Para descubrir y comunicarte con nodos cercanos sin internet.",
+            style      = MaterialTheme.typography.bodyMedium,
             color      = LockChatTheme.colors.onBackground,
-            textAlign  = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text       = "BLE · LoRa mesh",
-            style      = MaterialTheme.typography.labelMedium,
-            color      = LockChatTheme.colors.primary,
-            textAlign  = TextAlign.Center,
             fontFamily = TerminalFontFamily
         )
 
-        Spacer(Modifier.height(56.dp))
+        Spacer(Modifier.height(48.dp))
 
-        // ── Handle ──────────────────────────────────────
-        Text(
-            text  = "ELIGE TU HANDLE",
-            style = MaterialTheme.typography.labelSmall,
-            color = LockChatTheme.colors.primary,
-            fontFamily = TerminalFontFamily,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(6.dp))
-
-        OutlinedTextField(
-            value         = state.handle,
-            onValueChange = viewModel::onHandleChange,
-            modifier      = Modifier.fillMaxWidth(),
-            placeholder   = {
-                Text(
-                    "> ghost_77",
-                    color      = LockChatTheme.colors.outline,
-                    fontFamily = TerminalFontFamily,
-                    fontSize   = 14.sp
-                )
-            },
-            isError    = state.handleError != null,
-            singleLine = true,
-            shape      = RoundedCornerShape(4.dp),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Ascii,
-                imeAction    = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboard?.hide()
-                    viewModel.onCreateIdentity()
-                }
-            ),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor      = LockChatTheme.colors.primary,
-                unfocusedBorderColor    = LockChatTheme.colors.outline,
-                errorBorderColor        = LockChatTheme.colors.error,
-                focusedTextColor        = LockChatTheme.colors.onBackground,
-                unfocusedTextColor      = LockChatTheme.colors.onBackground,
-                cursorColor             = LockChatTheme.colors.primary,
-                focusedContainerColor   = LockChatTheme.colors.surface,
-                unfocusedContainerColor = LockChatTheme.colors.surface
-            ),
-            textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = TerminalFontFamily)
-        )
-
-        if (state.handleError != null) {
-            Text(
-                text     = state.handleError!!,
-                color    = LockChatTheme.colors.error,
-                style    = MaterialTheme.typography.labelSmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp)
-            )
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            text  = "Visible para todos en la red. Solo letras minúsculas, números y _",
-            style = MaterialTheme.typography.bodySmall,
-            color = LockChatTheme.colors.outline,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(40.dp))
-
-        // ── Botón crear ──────────────────────────────────
         Button(
-            onClick  = {
-                keyboard?.hide()
-                viewModel.onCreateIdentity()
-            },
-            enabled  = state.handle.isNotBlank() && !state.isLoading,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            shape  = RoundedCornerShape(4.dp),
-            colors = ButtonDefaults.buttonColors(
+            onClick  = { permissionsState.launchMultiplePermissionRequest() },
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            shape    = RoundedCornerShape(4.dp),
+            colors   = ButtonDefaults.buttonColors(
                 containerColor = LockChatTheme.colors.primary,
                 contentColor   = LockChatTheme.colors.onPrimary
             )
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier    = Modifier.size(20.dp),
-                    color       = LockChatTheme.colors.onPrimary,
-                    strokeWidth = 2.dp
-                )
-            } else {
-                Text(
-                    text       = "ENTRAR A LA RED",
-                    fontFamily = TerminalFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize   = 15.sp
-                )
-            }
+            Text(
+                text       = "CONCEDER PERMISOS",
+                fontFamily = TerminalFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize   = 15.sp
+            )
         }
     }
 }

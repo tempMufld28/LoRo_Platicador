@@ -52,6 +52,8 @@ fun ChatDetailScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(LockChatTheme.colors.background)
+            .navigationBarsPadding()
+            .imePadding()
     ) {
         // TopBar
         ChatDetailTopBar(
@@ -149,7 +151,7 @@ private fun ChannelInfoBanner(channelLabel: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("🔒 $channelLabel", style = MaterialTheme.typography.labelSmall,
+        Text("[E2E] $channelLabel", style = MaterialTheme.typography.labelSmall,
             color = LockChatTheme.colors.outline, textAlign = TextAlign.Center)
     }
 }

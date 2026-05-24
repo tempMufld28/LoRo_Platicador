@@ -71,7 +71,7 @@ class IdentityDataStore @Inject constructor(
     override suspend fun createIdentity(handle: String): Result<Identity> {
         return runCatching {
             // Genera nodeId único: 4 bytes aleatorios como hex
-            val nodeId = Random.nextBytes(4).joinToString("") { "%02x".format(it) }
+            val nodeId = Random.nextBytes(4).joinToString("") { "%02x".format(it.toInt() and 0xFF) }
             val identity = Identity(nodeId = nodeId, handle = handle.trim())
 
             context.dataStore.edit { prefs ->

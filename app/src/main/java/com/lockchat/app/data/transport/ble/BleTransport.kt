@@ -53,6 +53,10 @@ class BleTransport @Inject constructor(
     /** Peers conectados actualmente: nodeId → BluetoothGatt */
     private val connectedClients = mutableMapOf<String, BluetoothGatt>()
 
+    /** Nodos realmente conectados (fase GATT client con servicios descubiertos) */
+    private val _connectedNodeIds = MutableStateFlow<Set<String>>(emptySet())
+    val connectedNodeIds: StateFlow<Set<String>> = _connectedNodeIds.asStateFlow()
+
     /** Peers descubiertos via advertising (nodeId → handle, dirección MAC) */
     private val _discoveredPeers = MutableStateFlow<Map<String, PeerInfo>>(emptyMap())
     val discoveredPeers: StateFlow<Map<String, PeerInfo>> = _discoveredPeers.asStateFlow()
@@ -95,6 +99,7 @@ class BleTransport @Inject constructor(
         scanner?.stopScan(scanCallback)
         connectedClients.values.forEach { it.close() }
         connectedClients.clear()
+        _connectedNodeIds.value = emptySet()
         _discoveredPeers.value = emptyMap()
         _state.value = TransportState.DISCONNECTED
         Log.i(TAG, "BleTransport detenido")
@@ -194,8 +199,11 @@ class BleTransport @Inject constructor(
             .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
             .build()
 
-        // Incluir nodeId en los datos del advertising para que otros puedan identificarnos
-        val nodeBytes = localNodeId.toByteArray(Charsets.UTF_8).take(4).toByteArray()
+        // Incluir nodeId COMPLETO en los datos del advertising.
+        // nodeId es 8 hex chars (ej: "f1a2b3c4") → se codifica como sus 4 bytes hex reales.
+        val nodeBytes = localNodeId.chunked(2)
+            .map { it.toInt(16).toByte() }
+            .toByteArray()
         val data = AdvertiseData.Builder()
             .setIncludeDeviceName(false)
             .addServiceUuid(ParcelUuid(SERVICE_UUID))
@@ -210,7 +218,7 @@ class BleTransport @Inject constructor(
         bluetoothAdapter?.name = "LC_${localHandle.take(8)}"
 
         advertiser?.startAdvertising(settings, data, scanResponse, advertiseCallback)
-        Log.i(TAG, "Advertising iniciado como LC_${localHandle.take(8)}")
+        Log.i(TAG, "Advertising iniciado como LC_${localHandle.take(8)} nodeId=$localNodeId")
     }
 
     private val advertiseCallback = object : AdvertiseCallback() {
@@ -249,11 +257,14 @@ class BleTransport @Inject constructor(
             if (!name.startsWith("LC_")) return
 
             val handle = name.removePrefix("LC_")
-            // Extraer nodeId del manufacturer data
+            // Extraer nodeId del manufacturer data — decodificar bytes hex → string hex
             val mfData = result.scanRecord?.getManufacturerSpecificData(0x4C43)
-            val nodeId = mfData?.let { String(it, Charsets.UTF_8) } ?: device.address.replace(":", "")
+            val nodeId = mfData?.joinToString("") { "%02x".format(it.toInt() and 0xFF) }
+                ?: device.address.replace(":", "").lowercase()
 
             if (nodeId == localNodeId) return  // somos nosotros mismos
+
+            Log.d(TAG, "Scan result: handle=$handle nodeId=$nodeId rssi=${result.rssi}")
 
             val current = _discoveredPeers.value.toMutableMap()
             if (!current.containsKey(nodeId)) {
@@ -262,6 +273,10 @@ class BleTransport @Inject constructor(
                 Log.i(TAG, "Peer descubierto: handle=$handle nodeId=$nodeId rssi=${result.rssi}")
                 // Conectar automáticamente
                 scope.launch { connectToPeer(device, nodeId, handle) }
+            } else {
+                // Actualizar RSSI del peer ya descubierto
+                current[nodeId] = current[nodeId]!!.copy(rssi = result.rssi)
+                _discoveredPeers.value = current
             }
         }
 
@@ -277,13 +292,14 @@ class BleTransport @Inject constructor(
         device.connectGatt(context, false, object : BluetoothGattCallback() {
             override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    Log.i(TAG, "Conectado a $handle")
+                    Log.i(TAG, "Conectado a $handle ($nodeId)")
                     connectedClients[nodeId] = gatt
+                    // Primero negociar MTU, luego descubrir servicios en el callback onMtuChanged
                     gatt.requestMtu(512)
-                    gatt.discoverServices()
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    Log.i(TAG, "Desconectado de $handle")
+                    Log.i(TAG, "Desconectado de $handle ($nodeId)")
                     connectedClients.remove(nodeId)
+                    _connectedNodeIds.value = connectedClients.keys.toSet()
                     gatt.close()
                     // Actualizar estado del peer
                     val peers = _discoveredPeers.value.toMutableMap()
@@ -295,9 +311,15 @@ class BleTransport @Inject constructor(
                 }
             }
 
+            override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
+                Log.i(TAG, "MTU negociado: $mtu para $handle")
+                // Ahora sí descubrir servicios (después de que el MTU se estabilizó)
+                gatt.discoverServices()
+            }
+
             override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    Log.i(TAG, "Servicios descubiertos en $handle")
+                    Log.i(TAG, "Servicios descubiertos en $handle ($nodeId)")
                     // Suscribir a notificaciones TX
                     val charTx = gatt.getService(SERVICE_UUID)?.getCharacteristic(CHAR_TX_UUID)
                     if (charTx != null) {
@@ -308,7 +330,10 @@ class BleTransport @Inject constructor(
                             gatt.writeDescriptor(it)
                         }
                     }
+                    _connectedNodeIds.value = connectedClients.keys.toSet()
                     _state.value = TransportState.CONNECTED
+                } else {
+                    Log.e(TAG, "Error descubriendo servicios en $handle: status=$status")
                 }
             }
 

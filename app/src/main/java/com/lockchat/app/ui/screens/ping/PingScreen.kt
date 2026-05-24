@@ -244,7 +244,7 @@ private fun PingControlButton(isRunning: Boolean, onClick: () -> Unit) {
         )
     ) {
         Text(
-            text       = if (isRunning) "⬛  DETENER PING" else "▶  INICIAR PING",
+            text       = if (isRunning) "[X] DETENER PING" else "[>] INICIAR PING",
             fontFamily = TerminalFontFamily,
             fontWeight = FontWeight.Bold,
             fontSize   = 15.sp
@@ -326,7 +326,7 @@ private fun PingWarningBanner(message: String) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("⚠", fontSize = 16.sp)
+            Text("[!]", fontSize = 16.sp)
             Text(message, style = MaterialTheme.typography.bodySmall,
                 color = LockChatTheme.colors.warning)
         }
@@ -451,7 +451,7 @@ private fun PingEmptyState() {
             Text("Selecciona un contacto e inicia el ping",
                 style = MaterialTheme.typography.bodySmall,
                 color = LockChatTheme.colors.outline, textAlign = TextAlign.Center)
-            Text("Prueba la latencia de tu canal LoRa/BT Mesh",
+            Text("Prueba la latencia de tu canal LoRa/BT Red",
                 style = MaterialTheme.typography.labelSmall,
                 color = LockChatTheme.colors.outline.copy(alpha = 0.5f), textAlign = TextAlign.Center)
         }

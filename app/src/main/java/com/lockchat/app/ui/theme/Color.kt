@@ -84,3 +84,20 @@ val LockChatDarkColors = LockChatColors(
     online            = Green400,
     outline           = Gray500
 )
+
+val LockChatLightColors = LockChatColors(
+    background        = White,
+    surface           = Color(0xFFF5F5F5),
+    surfaceVariant    = Color(0xFFE5E5E5),
+    primary           = Green600, // Un verde más oscuro y legible sobre blanco
+    primaryDim        = Green900,
+    onPrimary         = White,
+    onBackground      = Black,
+    onSurface         = Black,
+    onSurfaceVariant  = Color(0xFF333333),
+    error             = Red500,
+    warning           = Color(0xFFB8860B), // Dorado oscuro legible
+    warningContainer  = Color(0xFFFFF9C4),
+    online            = Green600,
+    outline           = Color(0xFF7F7F7F)
+)
