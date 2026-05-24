@@ -3,8 +3,12 @@ name: Lock-Chat vBeta
 on:
   push:
     branches: [ "main", "master" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "main", "master" ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -26,7 +30,6 @@ jobs:
 
     - name: Build Debug APK
       run: ./gradlew assembleDebug
-      
 
     - name: Upload Debug APK Artifact
       uses: actions/upload-artifact@v4
@@ -34,3 +37,14 @@ jobs:
         name: Lock-Chat-Debug-v0.9.8
         path: app/build/outputs/apk/debug/*.apk
         compression-level: 0
+
+    - name: Create GitHub Release and Upload APK
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: app/build/outputs/apk/debug/*.apk
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
