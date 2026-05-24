@@ -20,7 +20,7 @@ data class ChatsUiState(
     val conversations: List<ConversationUi> = emptyList(),
     val filter: ChatFilter               = ChatFilter.TODOS,
     val transportState: TransportUiState = TransportUiState.SIN_TRANSPORTE,
-    val appVersion: String               = "Lock-Chat v0.8.7",
+    val appVersion: String               = "Lock-Chat v0.9.8",
     val isLoading: Boolean               = false
 ) {
     val filteredConversations: List<ConversationUi>

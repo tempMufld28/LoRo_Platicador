@@ -41,7 +41,11 @@ fun LockChatNavGraph(
 ) {
     // Flujo: si ya existe identidad → Chats, si no → Onboarding
     val onboardingVm: OnboardingViewModel = hiltViewModel()
-    val startDestination = if (onboardingVm.hasIdentity()) Routes.CHATS else Routes.ONBOARDING
+    val startDestination = try {
+        if (onboardingVm.hasIdentity()) Routes.CHATS else Routes.ONBOARDING
+    } catch (e: Exception) {
+        Routes.ONBOARDING
+    }
 
     NavHost(
         navController    = navController,

@@ -9,7 +9,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Surface
@@ -33,10 +32,10 @@ import javax.inject.Inject
  *   2. Arrancar MeshForegroundService para activar el transporte BLE/LoRa
  *   3. Verificar Bluetooth activo en cada onResume
  *
- * enableEdgeToEdge() + systemBarsPadding() en el NavGraph:
- *   - Surface ocupa toda la pantalla (fondo llega al borde)
- *   - El contenido navegable respeta status bar y navigation bar
- *   - Ninguna pantalla individual necesita gestionar insets
+ * IMPORTANTE: En targetSdk 35, un foreground service con tipo connectedDevice
+ * requiere que los permisos BLE de runtime (BLUETOOTH_SCAN, BLUETOOTH_CONNECT,
+ * BLUETOOTH_ADVERTISE) estén concedidos ANTES de llamar startForeground().
+ * Por eso, el servicio NO se arranca hasta que el onboarding conceda esos permisos.
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,19 +50,6 @@ class MainActivity : ComponentActivity() {
     /** Flag para evitar re-lanzar el servicio si ya fue arrancado en esta sesión */
     private var serviceStarted = false
 
-    /**
-     * Launcher para solicitar POST_NOTIFICATIONS en Android 13+.
-     * Si se concede, arranca el servicio de transporte.
-     */
-    private val notifPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
-                launchTransportService()
-            } else {
-                Log.w(TAG, "Permiso de notificaciones denegado — el servicio de transporte no se iniciará")
-            }
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -71,12 +57,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val isDarkMode by themePreferences.isDarkMode.collectAsState(initial = true)
             LockChatTheme(isDarkMode = isDarkMode) {
-                // Surface cubre todo (color de fondo hasta los bordes)
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = LockChatTheme.colors.background
                 ) {
-                    // El NavGraph respeta los insets del sistema (status bar, nav bar)
                     LockChatNavGraph(
                         modifier = Modifier.systemBarsPadding()
                     )
@@ -84,46 +68,55 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Arrancar el servicio de transporte BLE/LoRa (con chequeo de permisos)
-        startTransportService()
+        // Intentar arrancar el servicio si ya tenemos permisos
+        tryStartTransportService()
     }
 
     override fun onResume() {
         super.onResume()
         ensureBluetoothEnabled()
-        // Re-arrancar servicio si por alguna razón se detuvo
-        startTransportService()
+        // Re-intentar en cada onResume — al volver del onboarding con permisos
+        // concedidos, esto arrancará el servicio automáticamente.
+        tryStartTransportService()
     }
 
     /**
-     * Verifica permisos y arranca el servicio de transporte.
+     * Intenta arrancar MeshForegroundService.
      *
-     * En Android 13+ (API 33): POST_NOTIFICATIONS es obligatorio para
-     * que startForeground() funcione sin crashear. Si no lo tiene,
-     * lo solicita al usuario.
+     * Solo arranca si TODOS los permisos requeridos están concedidos:
+     *   - BLUETOOTH_CONNECT (runtime, requerido por foregroundServiceType=connectedDevice)
+     *   - POST_NOTIFICATIONS (Android 13+, requerido para mostrar la notificación)
      *
-     * En Android 12 y anteriores: el permiso no existe, se inicia directamente.
+     * Si faltan permisos, simplemente no arranca. El onboarding se encarga de
+     * solicitarlos, y al volver a onResume() se reintentará automáticamente.
      */
-    private fun startTransportService() {
+    private fun tryStartTransportService() {
         if (serviceStarted) return
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+ requiere POST_NOTIFICATIONS para foreground services
-            when {
-                ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    launchTransportService()
-                }
-                else -> {
-                    // Solicitar permiso — el resultado se maneja en notifPermissionLauncher
-                    notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-        } else {
-            // Android 12 y anteriores: no necesita permiso de notificaciones
-            launchTransportService()
+        // 1. Verificar permiso BLE runtime (obligatorio para FGS connectedDevice en targetSdk 35)
+        val hasBlePermission = ContextCompat.checkSelfPermission(
+            this, Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!hasBlePermission) {
+            Log.d(TAG, "Sin permiso BLUETOOTH_CONNECT — servicio diferido hasta onboarding")
+            return
         }
+
+        // 2. Verificar permiso de notificaciones (Android 13+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasNotifPermission = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasNotifPermission) {
+                Log.d(TAG, "Sin permiso POST_NOTIFICATIONS — servicio diferido")
+                return
+            }
+        }
+
+        // 3. Todos los permisos concedidos → arrancar
+        launchTransportService()
     }
 
     /**
@@ -151,15 +144,21 @@ class MainActivity : ComponentActivity() {
      * Si no lo está, solicita al usuario que lo encienda mediante el diálogo del sistema.
      */
     private fun ensureBluetoothEnabled() {
+        // Solo solicitar si ya tenemos permiso BLUETOOTH_CONNECT
+        val hasPermission = ContextCompat.checkSelfPermission(
+            this, Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!hasPermission) return
+
         val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
         if (adapter != null && !adapter.isEnabled) {
             val enableBtIntent = Intent(android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE)
             try {
                 startActivity(enableBtIntent)
-            } catch (e: SecurityException) {
-                // Falta de permisos en tiempo de ejecución, se solicitarán en el flujo normal
+            } catch (_: SecurityException) {
+                // Permiso revocado entre el check y la llamada — ignorar
             }
         }
     }
 }
-
