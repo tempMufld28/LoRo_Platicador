@@ -26,21 +26,21 @@ Sin torres. Sin SIM. Sin nube. Tu dispositivo se convierte en un **nodo activo**
 
 ## 📑 Tabla de contenidos
 
-- [✨ Características](#-características)
-- [🏗️ Arquitectura](#️-arquitectura)
-- [🧰 Stack tecnológico](#-stack-tecnológico)
-- [📁 Estructura del proyecto](#-estructura-del-proyecto)
-- [📲 Pantallas y flujo](#-pantallas-y-flujo)
-- [🔧 Compilación y ejecución](#-compilación-y-ejecución)
-- [⬇️ Descarga e instalación](#️-descarga-e-instalación)
-- [🔐 Permisos](#-permisos)
-- [🗺️ Roadmap](#️-roadmap)
-- [🤝 Contribuir](#-contribuir)
-- [📄 Licencia](#-licencia)
+- [Características](#-características)
+- [Arquitectura](#️-arquitectura)
+- [Stack tecnológico](#-stack-tecnológico)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Pantallas y flujo](#-pantallas-y-flujo)
+- [Compilación y ejecución](#-compilación-y-ejecución)
+- [Descarga e instalación](#️-descarga-e-instalación)
+- [Permisos](#-permisos)
+- [Roadmap](#️-roadmap)
+- [Contribuir](#-contribuir)
+- [Licencia](#-licencia)
 
 ---
 
-## ✨ Características
+##  Características
 
 | | Funcionalidad |
 |:---:|---|
@@ -57,7 +57,7 @@ Sin torres. Sin SIM. Sin nube. Tu dispositivo se convierte en un **nodo activo**
 
 ---
 
-## 🏗️ Arquitectura
+##  Arquitectura
 
 Lock-Chat sigue **Clean Architecture + MVVM** con inyección de dependencias mediante **Hilt**:
 
@@ -95,7 +95,7 @@ Lock-Chat sigue **Clean Architecture + MVVM** con inyección de dependencias med
 
 ---
 
-## 🧰 Stack tecnológico
+##  Stack tecnológico
 
 | Capa | Tecnología |
 |:---|:---|
@@ -117,7 +117,7 @@ Lock-Chat sigue **Clean Architecture + MVVM** con inyección de dependencias med
 
 ---
 
-## 📁 Estructura del proyecto
+##  Estructura del proyecto
 
 ```
 Lock-Chat/
@@ -178,7 +178,7 @@ Lock-Chat/
 
 ---
 
-## 📲 Pantallas y flujo
+##  Pantallas y flujo
 
 1. **Onboarding** — primera ejecución: genera tu identidad criptográfica local.
 2. **Chats** — lista de conversaciones + estado online de contactos.
@@ -211,7 +211,7 @@ Para compilar el release firmado, configura tu keystore en `app/build.gradle.kts
 
 ---
 
-## ⬇️ Descarga e instalación
+##  Descarga e instalación
 
 La forma más sencilla es desde la página oficial:
 
@@ -231,7 +231,7 @@ Pasos de instalación:
 
 ---
 
-## 🔐 Permisos
+##  Permisos
 
 | Permiso | Uso |
 |:---|:---|
@@ -246,7 +246,7 @@ Pasos de instalación:
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
 - [x] Transporte BLE bidireccional con ACK
 - [x] Identidad descentralizada + descubrimiento QR
@@ -254,10 +254,10 @@ Pasos de instalación:
 - [x] Diagnóstico BLE en tiempo real
 - [x] Driver USB serial para LoRa (ESP32)
 - [x] Página de descarga + CI/CD con releases automáticos
-- [ ] Cifrado E2E con X3DH / Double Ratchet
-- [ ] SQLCipher para base de datos cifrada
-- [ ] Bloqueo biométrico de la app
-- [ ] Topología mesh multi-salto (mesh routing)
+- [x] Cifrado E2E con X3DH / Double Ratchet
+- [x] SQLCipher para base de datos cifrada
+- [x] Bloqueo biométrico de la app
+- [x] Topología mesh multi-salto (mesh routing)
 
 ---
 
@@ -276,9 +276,9 @@ git push origin feature/mi-mejora
 
 ---
 
-## 📄 Licencia
+##  Licencia
 
-Distribuido bajo licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.
+Distribuido bajo licencia **GNU GPLv3**. Consulta el archivo `LICENSE` para más detalles.
 
 ---
 
