@@ -42,7 +42,7 @@ Sin torres. Sin SIM. Sin nube. Tu dispositivo se convierte en un **nodo activo**
 
 ##  Características
 
-| | Funcionalidad |
+| Funcionalidad |
 |:---:|---|
 | **Transporte híbrido BLE + LoRa** — enrutamiento adaptativo entre Bluetooth directo y radio de largo alcance vía ESP32 USB. |
 | **Identidad descentralizada** — identificador criptográfico generado localmente, sin registro ni servidor central. |
@@ -191,7 +191,7 @@ Lock-Chat/
 
 ---
 
-## 🔧 Compilación y ejecución
+##  Compilación y ejecución
 
 **Requisitos:** Android Studio (Hedgehog o superior), JDK 17, Android SDK 35.
 
