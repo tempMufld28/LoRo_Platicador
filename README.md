@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ LOCK-CHAT
+#  LOCK-CHAT
 
 ### Red privada de mensajería P2P · Sin Internet · Sin servidores
 
@@ -44,16 +44,16 @@ Sin torres. Sin SIM. Sin nube. Tu dispositivo se convierte en un **nodo activo**
 
 | | Funcionalidad |
 |:---:|---|
-| 📡 | **Transporte híbrido BLE + LoRa** — enrutamiento adaptativo entre Bluetooth directo y radio de largo alcance vía ESP32 USB. |
-| 🔑 | **Identidad descentralizada** — identificador criptográfico generado localmente, sin registro ni servidor central. |
-| 🤝 | **Descubrimiento por QR** — intercambio offline de claves públicas escaneando un código QR con CameraX + ML Kit. |
-| 💬 | **Mensajería bidireccional** — cola de escritura GATT con ACK, binding robusto `nodeId`↔peer vía `CHAR_INFO`. |
-| 📥 | **Buzón de Solicitudes** — inbox para remitentes desconocidos con aceptar/rechazar antes de añadir contacto. |
-| 🔔 | **Notificaciones locales** — avisos de mensajes entrantes con supresión cuando el chat está activo. |
-| 🩺 | **Diagnóstico BLE** — pantalla con estado de adaptador, scanning, GATT server/client y conexiones activas. |
-| ⚡ | **Ping/Pong RTT** — medición de latencia en tiempo real y estado de los contactos. |
-| 🌙 | **Foreground Service** — transporte activo en segundo plano con notificación persistente. |
-| 🔒 | **Cero telemetría** — sin analytics, sin backup, sin recolección de datos. |
+| **Transporte híbrido BLE + LoRa** — enrutamiento adaptativo entre Bluetooth directo y radio de largo alcance vía ESP32 USB. |
+| **Identidad descentralizada** — identificador criptográfico generado localmente, sin registro ni servidor central. |
+| **Descubrimiento por QR** — intercambio offline de claves públicas escaneando un código QR con CameraX + ML Kit. |
+| **Mensajería bidireccional** — cola de escritura GATT con ACK, binding robusto `nodeId`↔peer vía `CHAR_INFO`. |
+| **Buzón de Solicitudes** — inbox para remitentes desconocidos con aceptar/rechazar antes de añadir contacto. |
+| **Notificaciones locales** — avisos de mensajes entrantes con supresión cuando el chat está activo. |
+| **Diagnóstico BLE** — pantalla con estado de adaptador, scanning, GATT server/client y conexiones activas. |
+| **Ping/Pong RTT** — medición de latencia en tiempo real y estado de los contactos. |
+| **Foreground Service** — transporte activo en segundo plano con notificación persistente. |
+| **Cero telemetría** — sin analytics, sin backup, sin recolección de datos. |
 
 ---
 
