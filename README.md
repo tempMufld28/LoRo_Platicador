@@ -43,7 +43,7 @@ Sin torres. Sin SIM. Sin nube. Tu dispositivo se convierte en un **nodo activo**
 ##  Características
 
 | Funcionalidad |
-|:---:|---|
+|---|
 | **Transporte híbrido BLE + LoRa** — enrutamiento adaptativo entre Bluetooth directo y radio de largo alcance vía ESP32 USB. |
 | **Identidad descentralizada** — identificador criptográfico generado localmente, sin registro ni servidor central. |
 | **Descubrimiento por QR** — intercambio offline de claves públicas escaneando un código QR con CameraX + ML Kit. |
