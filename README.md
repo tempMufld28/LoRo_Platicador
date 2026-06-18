@@ -18,7 +18,7 @@
 
 ---
 
-> **Lock-Chat** es un sistema de mensajería móvil **P2P (Peer-to-Peer)** completamente descentralizado y enfocado en la privacidad extrema. Diseñado para operar **offline** en entornos hostiles, de rescate o tácticos, combina un transporte híbrido de **Bluetooth Low Energy (BLE)** y radiofrecuencia de largo alcance **LoRa** mediante módulos de hardware ESP32 conectados por **USB OTG**.
+> **Lock-Chat** es un sistema de mensajería móvil **P2P (Peer-to-Peer)** completamente descentralizado y enfocado en la privacidad extrema. Diseñado para operar **offline** en entornos hostiles, de rescate o técnicos, combina un transporte híbrido de **Bluetooth Low Energy (BLE)** y radiofrecuencia de largo alcance **LoRa** mediante módulos de hardware ESP32 conectados por **USB OTG**.
 
 Sin torres. Sin SIM. Sin nube. Tu dispositivo se convierte en un **nodo activo** de una malla privada que encripta y transmite los mensajes directamente a otros usuarios.
 
