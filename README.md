@@ -8,7 +8,7 @@
 [![Android](https://img.shields.io/badge/Android-8.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white&labelColor=0D0D0D)](https://www.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.24-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white&labelColor=0D0D0D)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-BOM%202024.05-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white&labelColor=0D0D0D)](https://developer.android.com/jetpack/compose)
-[![License](https://img.shields.io/badge/licencia-MIT-00FF41?style=for-the-badge&labelColor=0D0D0D)](LICENSE)
+[![License](https://img.shields.io/badge/licencia-GNU%20GPLv3-00FF41?style=for-the-badge&labelColor=0D0D0D)](LICENSE)
 
 [💬 Descargar APK](https://github.com/tempMufld28/Lock-Chat/releases/latest) ·
 [🌐 Página oficial](https://tempmufld28.github.io/Lock-Chat/) ·
