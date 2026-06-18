@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lock-Chat — Red Privada Descentralizada</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="grid-bg"></div>
+
+    <div class="container">
+
+        <nav>
+            <div class="logo">
+                <span class="logo-bracket">[</span>
+                <span class="logo-text">LOCK-CHAT</span>
+                <span class="logo-bracket">]</span>
+                <span class="cursor-blink">_</span>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <div class="hero-tag">&gt; INICIANDO_NODO</div>
+            <h1>Chatea en privado.<br><span class="green-glow">Estés donde estés.</span></h1>
+            <p class="subtitle">Sin Internet. Sin datos móviles. Sin servidores.<br>Lock-Chat crea tu propia red segura directamente entre tus dispositivos.</p>
+        </header>
+
+        <main>
+            <section class="features-grid">
+                <div class="card feature-card">
+                    <div class="card-header">&gt; FEATURE_01</div>
+                    <h3>Independencia Total</h3>
+                    <p>Funciona utilizando una red de radio privada y dedicada. Ideal para zonas sin cobertura, emergencias o máxima discreción.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="card-header">&gt; FEATURE_02</div>
+                    <h3>Privacidad Absoluta</h3>
+                    <p>Tus mensajes se encriptan directamente en tu dispositivo y se envían de punto a punto, sin pasar por ninguna empresa o servidor.</p>
+                </div>
+            </section>
+
+            <section class="card simplification-card">
+                <div class="card-header">&gt; COMO_FUNCIONA</div>
+                <h2>¿Cómo funciona?</h2>
+                <p>Lock-Chat utiliza pequeños dispositivos de comunicación dedicados <span class="inline-code">(Nodos de Red Privada)</span> que actúan como antenas seguras. Estos dispositivos, basados en tecnología de radio de largo alcance y bajo consumo, crean una malla privada que encripta y transmite tus mensajes directamente a otros usuarios de Lock-Chat, ignorando por completo la infraestructura de internet tradicional.</p>
+            </section>
+
+            <section class="download-section">
+                <div class="download-header">&gt; DESCARGA</div>
+                <p class="download-text">Únete a la red privada y toma el control de tus comunicaciones.</p>
+                <a href="https://github.com/tempMufld28/Lock-Chat/releases/download/v1.2.2/Lock-Chat.apk" download="Lock-Chat.apk" class="btn-download" id="downloadBtn">
+                    <svg class="icon-download" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3V16M12 16L16 12M12 16L8 12M20 18H4C3.44772 18 3 18.4477 3 19V20C3 20.5523 3.44772 21 4 21H20C20.5523 21 21 20.5523 21 20V19C21 18.4477 20.5523 18 20 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>DESCARGAR APK</span>
+                </a>
+                <p class="version-info">v1.2.2 &nbsp;|&nbsp; Requiere Android 8.0+ &nbsp;|&nbsp; BLE + LoRa</p>
+                <div id="toast" class="toast">&gt; Descarga iniciada. Revisa tus notificaciones.</div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&gt; © 2026 LOCK_CHAT_PROJECT // SEGURIDAD_Y_SIMPLICIDAD</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
