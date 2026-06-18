@@ -334,6 +334,117 @@ footer {
     font-weight: 300;
 }
 
+/* ── Guía de instalación ── */
+.guide-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 18px;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.guide-intro {
+    color: var(--text-secondary);
+    font-weight: 300;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.terminal-window {
+    background-color: #050505;
+    border: 1px solid rgba(0, 255, 65, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.05);
+}
+
+.terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background-color: var(--bg-surface-2);
+    border-bottom: 1px solid rgba(0, 255, 65, 0.15);
+}
+
+.term-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.term-dot.red { background-color: #FF5F56; }
+.term-dot.yellow { background-color: #FFBD2E; }
+.term-dot.green { background-color: #27C93F; }
+
+.term-title {
+    margin-left: auto;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.terminal-body {
+    padding: 22px 20px;
+    font-size: 0.9rem;
+}
+
+.term-step {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.term-step:first-of-type {
+    margin-top: 0;
+}
+
+.term-prompt {
+    color: var(--green-dim);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.term-cmd {
+    color: var(--green-primary);
+    font-weight: 500;
+}
+
+.term-out {
+    color: var(--text-secondary);
+    font-weight: 300;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin: 6px 0 0 0;
+}
+
+.term-done {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px dashed rgba(0, 255, 65, 0.15);
+}
+
+.term-success {
+    color: var(--green-primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.blink-cursor {
+    animation: blink 1s steps(2) infinite;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
     h1 {
@@ -348,5 +459,12 @@ footer {
     .btn-download {
         padding: 14px 28px;
         font-size: 0.9rem;
+    }
+    .terminal-body {
+        padding: 16px 14px;
+        font-size: 0.82rem;
+    }
+    .term-out {
+        font-size: 0.82rem;
     }
 }
