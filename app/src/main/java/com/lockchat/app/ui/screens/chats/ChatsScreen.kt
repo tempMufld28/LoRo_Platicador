@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material.icons.outlined.NetworkCheck
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,6 +29,7 @@ import com.lockchat.app.domain.model.TransportUiState
 import com.lockchat.app.ui.theme.LockChatTheme
 import com.lockchat.app.ui.theme.TerminalFontFamily
 import com.lockchat.app.ui.components.SignalWavesIcon
+import com.lockchat.app.ui.screens.onboarding.LockChatPermissionsGate
 
 @Composable
 fun ChatsScreen(
@@ -35,10 +37,12 @@ fun ChatsScreen(
     onChatClick: (String) -> Unit,
     onNavigateToPing: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    onNavigateToAddContact: () -> Unit
+    onNavigateToAddContact: () -> Unit,
+    onNavigateToSolicitudes: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LockChatPermissionsGate {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -70,7 +74,9 @@ fun ChatsScreen(
             ChatsTopBar(
                 appVersion       = state.appVersion,
                 newMessagesCount = state.totalUnread,
-                transportState   = state.transportState
+                solicitudesCount = state.solicitudesCount,
+                transportState   = state.transportState,
+                onSolicitudes    = onNavigateToSolicitudes
             )
 
             OutlinedTextField(
@@ -179,13 +185,16 @@ fun ChatsScreen(
             }
         }
     }
+    }
 }
 
 @Composable
 fun ChatsTopBar(
     appVersion: String,
     newMessagesCount: Int,
-    transportState: TransportUiState
+    solicitudesCount: Int,
+    transportState: TransportUiState,
+    onSolicitudes: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -214,6 +223,36 @@ fun ChatsTopBar(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (solicitudesCount > 0) {
+                BadgedBox(
+                    badge = {
+                        Badge(containerColor = LockChatTheme.colors.primary) {
+                            Text(
+                                solicitudesCount.toString(),
+                                fontFamily = TerminalFontFamily,
+                                fontSize = 9.sp,
+                                color = LockChatTheme.colors.onPrimary
+                            )
+                        }
+                    }
+                ) {
+                    IconButton(onClick = onSolicitudes) {
+                        Icon(
+                            Icons.Outlined.Inbox,
+                            contentDescription = "Solicitudes",
+                            tint = LockChatTheme.colors.primary
+                        )
+                    }
+                }
+            } else {
+                IconButton(onClick = onSolicitudes) {
+                    Icon(
+                        Icons.Outlined.Inbox,
+                        contentDescription = "Solicitudes",
+                        tint = LockChatTheme.colors.outline
+                    )
+                }
+            }
             if (newMessagesCount > 0) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),

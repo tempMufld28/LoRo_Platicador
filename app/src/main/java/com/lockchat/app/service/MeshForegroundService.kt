@@ -3,6 +3,7 @@ package com.lockchat.app.service
 import android.app.*
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.lockchat.app.MainActivity
 import com.lockchat.app.data.transport.TransportManager
@@ -36,7 +37,12 @@ class MeshForegroundService : Service() {
         super.onCreate()
         createNotificationChannel()
         startForeground(NOTIF_ID, buildNotification("Iniciando..."))
-        transportManager.start()
+        try {
+            transportManager.start()
+        } catch (e: Exception) {
+            // Defensivo: una excepción síncrona aquí no debe tirar el servicio.
+            Log.e("MeshForegroundService", "Error al iniciar TransportManager", e)
+        }
 
         // Actualizar notificación cuando cambia el transporte
         scope.launch {

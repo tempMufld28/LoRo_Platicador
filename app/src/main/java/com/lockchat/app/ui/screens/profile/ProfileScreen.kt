@@ -39,6 +39,7 @@ import com.lockchat.app.ui.theme.TerminalFontFamily
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onNavigateToAddContact: () -> Unit,
+    onNavigateToDiagnostico: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -253,6 +254,27 @@ fun ProfileScreen(
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "AGREGAR CONTACTO",
+                    fontFamily = TerminalFontFamily,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            // Botón Diagnóstico BLE
+            OutlinedButton(
+                onClick  = onNavigateToDiagnostico,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                shape  = RoundedCornerShape(4.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = LockChatTheme.colors.primary
+                )
+            ) {
+                Icon(Icons.Default.BugReport, contentDescription = null,
+                    modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "DIAGNOSTICO BLE",
                     fontFamily = TerminalFontFamily,
                     fontWeight = FontWeight.Bold
                 )

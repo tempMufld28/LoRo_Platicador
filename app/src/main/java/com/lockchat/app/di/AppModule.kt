@@ -40,4 +40,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideMensajeDao(db: AppDatabase) = db.mensajeDao()
+
+    @Provides
+    @Singleton
+    fun provideSolicitudDao(db: AppDatabase) = db.solicitudDao()
 }

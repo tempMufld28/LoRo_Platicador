@@ -3,6 +3,7 @@ package com.lockchat.app.ui.screens.chats
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lockchat.app.data.local.dao.MensajeDao
+import com.lockchat.app.data.repository.SolicitudRepository
 import com.lockchat.app.data.transport.TransportManager
 import com.lockchat.app.domain.model.ChatFilter
 import com.lockchat.app.domain.model.ConversationUi
@@ -20,7 +21,8 @@ data class ChatsUiState(
     val conversations: List<ConversationUi> = emptyList(),
     val filter: ChatFilter               = ChatFilter.TODOS,
     val transportState: TransportUiState = TransportUiState.SIN_TRANSPORTE,
-    val appVersion: String               = "Lock-Chat v0.8.7",
+    val appVersion: String               = "Lock-Chat v1.2.2",
+    val solicitudesCount: Int            = 0,
     val isLoading: Boolean               = false
 ) {
     val filteredConversations: List<ConversationUi>
@@ -36,6 +38,7 @@ data class ChatsUiState(
 class ChatsViewModel @Inject constructor(
     private val contactRepository: ContactRepository,
     private val mensajeDao: MensajeDao,
+    private val solicitudRepository: SolicitudRepository,
     private val transportManager: TransportManager
 ) : ViewModel() {
 
@@ -76,6 +79,8 @@ class ChatsViewModel @Inject constructor(
             filter         = filter,
             transportState = transport
         )
+    }.combine(solicitudRepository.observeCount()) { state, count ->
+        state.copy(solicitudesCount = count)
     }.stateIn(
         scope        = viewModelScope,
         started      = SharingStarted.WhileSubscribed(5_000),

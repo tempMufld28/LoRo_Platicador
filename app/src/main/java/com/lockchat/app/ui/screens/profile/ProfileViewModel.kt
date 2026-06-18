@@ -133,6 +133,16 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             identityRepository.updateHandle(newHandle)
+                .fold(
+                    onSuccess = {
+                        android.util.Log.i("ProfileViewModel", "Handle actualizado exitosamente a: $newHandle")
+                        _editHandleError.value = null
+                    },
+                    onFailure = { e ->
+                        android.util.Log.e("ProfileViewModel", "Error al actualizar handle", e)
+                        _editHandleError.value = e.message ?: "Error al guardar handle"
+                    }
+                )
             _isEditingHandle.value = false
             _isLoading.value = false
         }

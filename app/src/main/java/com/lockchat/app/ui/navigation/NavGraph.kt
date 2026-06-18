@@ -1,6 +1,7 @@
 package com.lockchat.app.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -15,7 +16,9 @@ import com.lockchat.app.ui.screens.chats.ChatsScreen
 import com.lockchat.app.ui.screens.onboarding.OnboardingScreen
 import com.lockchat.app.ui.screens.onboarding.OnboardingViewModel
 import com.lockchat.app.ui.screens.ping.PingScreen
+import com.lockchat.app.ui.screens.diagnostico.DiagnosticoScreen
 import com.lockchat.app.ui.screens.profile.ProfileScreen
+import com.lockchat.app.ui.screens.solicitudes.SolicitudesScreen
 
 // ─────────────────────────────────────────────────
 // Rutas de navegación
@@ -27,6 +30,8 @@ object Routes {
     const val PING         = "ping"
     const val PROFILE      = "profile"
     const val ADD_CONTACT  = "add_contact"
+    const val SOLICITUDES  = "solicitudes"
+    const val DIAGNOSTICO  = "diagnostico"
 
     fun chatDetail(contactId: String) = "chat/$contactId"
 }
@@ -37,11 +42,23 @@ object Routes {
 @Composable
 fun LockChatNavGraph(
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    pendingContactId: String? = null
 ) {
     // Flujo: si ya existe identidad → Chats, si no → Onboarding
     val onboardingVm: OnboardingViewModel = hiltViewModel()
-    val startDestination = if (onboardingVm.hasIdentity()) Routes.CHATS else Routes.ONBOARDING
+    val startDestination = try {
+        if (onboardingVm.hasIdentity()) Routes.CHATS else Routes.ONBOARDING
+    } catch (e: Exception) {
+        Routes.ONBOARDING
+    }
+
+    // Si viene de una notificación, navegar al chat del contacto
+    LaunchedEffect(pendingContactId) {
+        if (pendingContactId != null && onboardingVm.hasIdentity()) {
+            navController.navigate(Routes.chatDetail(pendingContactId))
+        }
+    }
 
     NavHost(
         navController    = navController,
@@ -65,7 +82,8 @@ fun LockChatNavGraph(
                 onChatClick         = { contactId -> navController.navigate(Routes.chatDetail(contactId)) },
                 onNavigateToPing    = { navController.navigate(Routes.PING) },
                 onNavigateToProfile = { navController.navigate(Routes.PROFILE) },
-                onNavigateToAddContact = { navController.navigate(Routes.ADD_CONTACT) }
+                onNavigateToAddContact = { navController.navigate(Routes.ADD_CONTACT) },
+                onNavigateToSolicitudes = { navController.navigate(Routes.SOLICITUDES) }
             )
         }
 
@@ -92,6 +110,7 @@ fun LockChatNavGraph(
         composable(Routes.PROFILE) {
             ProfileScreen(
                 onNavigateToAddContact = { navController.navigate(Routes.ADD_CONTACT) },
+                onNavigateToDiagnostico = { navController.navigate(Routes.DIAGNOSTICO) },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -100,6 +119,20 @@ fun LockChatNavGraph(
         composable(Routes.ADD_CONTACT) {
             AddContactScreen(
                 onContactAdded = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Solicitudes de mensajes de nodos desconocidos
+        composable(Routes.SOLICITUDES) {
+            SolicitudesScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Diagnóstico BLE
+        composable(Routes.DIAGNOSTICO) {
+            DiagnosticoScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

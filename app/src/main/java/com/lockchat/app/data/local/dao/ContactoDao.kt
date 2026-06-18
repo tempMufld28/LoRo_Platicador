@@ -16,6 +16,15 @@ interface ContactoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(contacto: ContactoEntity)
 
+    // ── Updates parciales (evitan DELETE+REPLACE que dispara CASCADE
+    //    y borraría todos los mensajes del contacto) ──
+
+    @Query("UPDATE contactos SET isOnline = :isOnline WHERE nodeId = :nodeId")
+    suspend fun updateOnlineStatus(nodeId: String, isOnline: Boolean)
+
+    @Query("UPDATE contactos SET lastSeen = :timestamp WHERE nodeId = :nodeId")
+    suspend fun updateLastSeen(nodeId: String, timestamp: Long)
+
     @Delete
     suspend fun delete(contacto: ContactoEntity)
 

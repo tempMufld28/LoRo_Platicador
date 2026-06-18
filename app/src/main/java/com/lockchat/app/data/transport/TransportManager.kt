@@ -1,8 +1,10 @@
 package com.lockchat.app.data.transport
 
 import android.util.Log
+import com.lockchat.app.data.notification.MessageNotifier
 import com.lockchat.app.data.repository.ContactoRepositoryImpl
 import com.lockchat.app.data.repository.MensajeRepositoryImpl
+import com.lockchat.app.data.repository.SolicitudRepository
 import com.lockchat.app.data.transport.ble.BleTransport
 import com.lockchat.app.data.transport.ble.IncomingMessage
 import com.lockchat.app.data.transport.lora.LoRaUsbTransport
@@ -33,7 +35,9 @@ class TransportManager @Inject constructor(
     val loRaUsbTransport: LoRaUsbTransport,
     private val identityRepository: IdentityRepository,
     private val mensajeRepository: MensajeRepositoryImpl,
-    private val contactoRepository: ContactoRepositoryImpl
+    private val contactoRepository: ContactoRepositoryImpl,
+    private val solicitudRepository: SolicitudRepository,
+    private val messageNotifier: MessageNotifier
 ) {
     companion object {
         private const val TAG = "TransportManager"
@@ -52,69 +56,101 @@ class TransportManager @Inject constructor(
     private val _pongReceivedFlow = MutableSharedFlow<Pair<String, Int>>(extraBufferCapacity = 64)
 
     fun start() {
-        val identity = identityRepository.observeIdentity().value ?: run {
-            Log.w(TAG, "Sin identidad — TransportManager no iniciado")
-            return
-        }
-
-        // Configurar identidad en BLE
-        bleTransport.localNodeId = identity.nodeId
-        bleTransport.localHandle = identity.handle
-
-        // Iniciar BLE
-        bleTransport.start()
-        _activeTransport.value = TransportUiState.BLE_DIRECT
-
-        // Observar peers BLE conectados y actualizar estado online/offline
         scope.launch {
-            var previousConnectedIds = emptySet<String>()
-            combine(
-                bleTransport.connectedNodeIds,
-                bleTransport.discoveredPeers
-            ) { connectedIds, discovered ->
-                connectedIds to discovered
-            }.collect { (connectedIds, discovered) ->
-                // Mapear solo los nodos REALMENTE conectados
-                val mapped = connectedIds.associateWith { nodeId ->
-                    discovered[nodeId]?.handle ?: "desconocido"
-                }
-                _connectedPeers.value = mapped
-
-                // Nuevos conectados → marcar online
-                (connectedIds - previousConnectedIds).forEach { nodeId ->
-                    contactoRepository.updateOnlineStatus(nodeId, true)
-                }
-
-                // Desconectados → marcar offline
-                (previousConnectedIds - connectedIds).forEach { nodeId ->
-                    contactoRepository.updateOnlineStatus(nodeId, false)
-                }
-
-                previousConnectedIds = connectedIds
+            // Esperar o cargar la identidad de forma no bloqueante
+            var identity = identityRepository.observeIdentity().value
+            if (identity == null) {
+                identity = identityRepository.loadIdentity().getOrNull()
             }
-        }
-
-        // Observar mensajes BLE entrantes
-        scope.launch {
-            bleTransport.incomingMessages.collect { incoming ->
-                handleIncomingMessage(incoming)
+            if (identity == null) {
+                // Esperar a que se emita la identidad (en el onboarding por ejemplo)
+                identity = identityRepository.observeIdentity()
+                    .filterNotNull()
+                    .first()
             }
-        }
 
-        // Observar disponibilidad de LoRa USB
-        scope.launch {
-            loRaUsbTransport.isLoRaAvailable.collect { available ->
-                if (available) {
-                    _activeTransport.value = TransportUiState.LORA_USB
-                    Log.i(TAG, "Cambiando a LoRa USB")
-                } else if (_activeTransport.value == TransportUiState.LORA_USB) {
-                    _activeTransport.value = TransportUiState.BLE_DIRECT
-                    Log.i(TAG, "LoRa USB desconectado — volviendo a BLE")
+            Log.i(TAG, "Identidad obtenida: ${identity.handle} (${identity.nodeId})")
+
+            // Configurar identidad en BLE
+            bleTransport.localNodeId = identity.nodeId
+            bleTransport.localHandle = identity.handle
+
+            // Iniciar BLE
+            withContext(Dispatchers.Main) {
+                bleTransport.start()
+            }
+            _activeTransport.value = TransportUiState.BLE_DIRECT
+
+            // Observar peers BLE conectados y actualizar estado online/offline
+            launch {
+                var previousConnectedIds = emptySet<String>()
+                combine(
+                    bleTransport.connectedNodeIds,
+                    bleTransport.discoveredPeers
+                ) { connectedIds, discovered ->
+                    connectedIds to discovered
+                }.collect { (connectedIds, discovered) ->
+                    // Mapear solo los nodos REALMENTE conectados
+                    val mapped = connectedIds.associateWith { nodeId ->
+                        discovered[nodeId]?.handle ?: "desconocido"
+                    }
+                    _connectedPeers.value = mapped
+
+                    // Nuevos conectados → marcar online
+                    (connectedIds - previousConnectedIds).forEach { nodeId ->
+                        contactoRepository.updateOnlineStatus(nodeId, true)
+                    }
+
+                    // Desconectados → marcar offline
+                    (previousConnectedIds - connectedIds).forEach { nodeId ->
+                        contactoRepository.updateOnlineStatus(nodeId, false)
+                    }
+
+                    previousConnectedIds = connectedIds
                 }
             }
-        }
 
-        Log.i(TAG, "TransportManager iniciado — identidad: ${identity.handle} (${identity.nodeId})")
+            // Observar mensajes BLE entrantes
+            launch {
+                bleTransport.incomingMessages.collect { incoming ->
+                    handleIncomingMessage(incoming)
+                }
+            }
+
+            // Observar disponibilidad de LoRa USB.
+            // Solo conmutamos a LORA_USB cuando el transporte puede enviar realmente
+            // (handshake AT completado). Mientras sea un stub que solo detecta hardware,
+            // permanecemos en BLE_DIRECT para no perder la mensajería.
+            launch {
+                loRaUsbTransport.canSend.collect { canSend ->
+                    if (canSend) {
+                        _activeTransport.value = TransportUiState.LORA_USB
+                        Log.i(TAG, "Cambiando a LoRa USB")
+                    } else if (_activeTransport.value == TransportUiState.LORA_USB) {
+                        _activeTransport.value = TransportUiState.BLE_DIRECT
+                        Log.i(TAG, "LoRa USB ya no puede enviar — volviendo a BLE")
+                    }
+                }
+            }
+
+            // Observar cambios de identidad (si editan el handle en perfil)
+            launch {
+                identityRepository.observeIdentity()
+                    .filterNotNull()
+                    .collect { newIdentity ->
+                        if (newIdentity.handle != bleTransport.localHandle) {
+                            Log.i(TAG, "Handle cambiado de '${bleTransport.localHandle}' a '${newIdentity.handle}'. Reiniciando BLE...")
+                            bleTransport.localHandle = newIdentity.handle
+                            withContext(Dispatchers.Main) {
+                                bleTransport.stop()
+                                bleTransport.start()
+                            }
+                        }
+                    }
+            }
+
+            Log.i(TAG, "TransportManager iniciado — identidad: ${identity.handle} (${identity.nodeId})")
+        }
     }
 
     fun stop() {
@@ -181,8 +217,15 @@ class TransportManager @Inject constructor(
         val contact = contactoRepository.findById(msg.fromNodeId)
 
         if (contact == null) {
-            // Contacto desconocido — ignorar (solo se aceptan mensajes de contactos guardados)
-            Log.w(TAG, "Mensaje de nodo desconocido: ${msg.fromNodeId} — ignorado")
+            // Contacto desconocido — capturar en el buzón de Solicitudes para que el
+            // usuario decida aceptarlo (crea contacto) o rechazarlo. Ya no se descarta.
+            Log.i(TAG, "Mensaje de nodo desconocido: ${msg.fromNodeId} → guardando en Solicitudes")
+            solicitudRepository.saveUnknown(msg.fromNodeId, msg.fromHandle, msg.content)
+            messageNotifier.showMessageNotification(
+                fromNodeId = msg.fromNodeId,
+                fromHandle = msg.fromHandle,
+                content    = "[Solicitud] ${msg.content}"
+            )
             return
         }
 
@@ -209,5 +252,12 @@ class TransportManager @Inject constructor(
 
         // Actualizar lastSeen del contacto
         contactoRepository.updateLastSeen(msg.fromNodeId, System.currentTimeMillis())
+
+        // Emitir notificación del sistema (se suprime si el chat está abierto)
+        messageNotifier.showMessageNotification(
+            fromNodeId = msg.fromNodeId,
+            fromHandle = contact.handle,
+            content    = msg.content
+        )
     }
 }

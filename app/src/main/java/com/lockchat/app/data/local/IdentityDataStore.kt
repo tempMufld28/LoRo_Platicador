@@ -96,10 +96,17 @@ class IdentityDataStore @Inject constructor(
 
     override suspend fun updateHandle(newHandle: String): Result<Unit> {
         return runCatching {
+            val trimmed = newHandle.trim()
             context.dataStore.edit { prefs ->
-                prefs[KEY_HANDLE] = newHandle.trim()
+                prefs[KEY_HANDLE] = trimmed
             }
-            _identity.value = _identity.value?.copy(handle = newHandle.trim())
+            val current = _identity.value
+            if (current != null) {
+                _identity.value = current.copy(handle = trimmed)
+            } else {
+                // Si por alguna razón es nulo, cargarlo de nuevo completo
+                loadIdentity().getOrNull()
+            }
         }
     }
 }

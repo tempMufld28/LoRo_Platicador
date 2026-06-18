@@ -29,15 +29,11 @@ class ContactoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateOnlineStatus(nodeId: String, isOnline: Boolean) {
-        dao.findById(nodeId)?.let { entity ->
-            dao.insert(entity.copy(isOnline = isOnline))
-        }
+        dao.updateOnlineStatus(nodeId, isOnline)
     }
 
     override suspend fun updateLastSeen(nodeId: String, timestamp: Long) {
-        dao.findById(nodeId)?.let { entity ->
-            dao.insert(entity.copy(lastSeen = timestamp))
-        }
+        dao.updateLastSeen(nodeId, timestamp)
     }
 
     // ── Mappers ──────────────────────────────────────────────────────

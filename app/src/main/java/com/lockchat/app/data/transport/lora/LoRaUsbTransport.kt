@@ -39,6 +39,14 @@ class LoRaUsbTransport @Inject constructor(
     private val _isLoRaAvailable = MutableStateFlow(false)
     val isLoRaAvailable: StateFlow<Boolean> = _isLoRaAvailable.asStateFlow()
 
+    /**
+     * Indica si el transporte LoRa está realmente listo para enviar mensajes.
+     * El stub actual solo detecta hardware pero NO implementa el envío, por lo que
+     * devuelve false hasta que se implemente el handshake AT real.
+     * Evita que TransportManager secuestre el transporte activo sin poder entregar.
+     */
+    val canSend: StateFlow<Boolean> = MutableStateFlow(false).asStateFlow()
+
     private val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
 
     /**

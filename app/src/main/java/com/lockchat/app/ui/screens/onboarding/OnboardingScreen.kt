@@ -34,13 +34,20 @@ fun OnboardingScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
 
+    val requiredPermissions = remember {
+        buildList {
+            add(android.Manifest.permission.CAMERA)
+            add(android.Manifest.permission.BLUETOOTH_SCAN)
+            add(android.Manifest.permission.BLUETOOTH_CONNECT)
+            add(android.Manifest.permission.BLUETOOTH_ADVERTISE)
+            // Android 13+: requerido para el foreground service (notificación persistente)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                add(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
     val multiplePermissionsState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.BLUETOOTH_SCAN,
-            android.Manifest.permission.BLUETOOTH_CONNECT,
-            android.Manifest.permission.BLUETOOTH_ADVERTISE
-        )
+        permissions = requiredPermissions
     )
 
     var showPermissionsStep by remember { mutableStateOf(false) }
@@ -207,7 +214,7 @@ fun OnboardingScreen(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun PermissionsRequestScreen(
+fun PermissionsRequestScreen(
     permissionsState: MultiplePermissionsState
 ) {
     Column(
@@ -239,7 +246,8 @@ private fun PermissionsRequestScreen(
         Text(
             text       = "Para operar como un nodo en la Red descentralizada, Lock-Chat necesita acceder a:\n\n" +
                          "1. [CÁMARA]\n   Para escanear códigos QR de tus contactos.\n\n" +
-                         "2. [BLUETOOTH]\n   Para descubrir y comunicarte con nodos cercanos sin internet.",
+                         "2. [BLUETOOTH]\n   Para descubrir y comunicarte con nodos cercanos sin internet.\n\n" +
+                         "3. [NOTIFICACIONES]\n   Para mantener el servicio de red activo en segundo plano.",
             style      = MaterialTheme.typography.bodyMedium,
             color      = LockChatTheme.colors.onBackground,
             fontFamily = TerminalFontFamily
@@ -319,5 +327,35 @@ fun TerminalTextField(
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
+    }
+}
+
+// ─────────────────────────────────────────────────
+// Gate de permisos reutilizable
+// Muestra la pantalla de solicitud de permisos si falta
+// alguno, o el contenido normal si ya están concedidos.
+// Usado por pantallas a las que llegan usuarios que ya
+// tienen identidad (y por tanto saltan el onboarding).
+// ─────────────────────────────────────────────────
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun LockChatPermissionsGate(content: @Composable () -> Unit) {
+    val requiredPermissions = remember {
+        buildList {
+            add(android.Manifest.permission.CAMERA)
+            add(android.Manifest.permission.BLUETOOTH_SCAN)
+            add(android.Manifest.permission.BLUETOOTH_CONNECT)
+            add(android.Manifest.permission.BLUETOOTH_ADVERTISE)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                add(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+    val permissionsState = rememberMultiplePermissionsState(permissions = requiredPermissions)
+
+    if (permissionsState.allPermissionsGranted) {
+        content()
+    } else {
+        PermissionsRequestScreen(permissionsState = permissionsState)
     }
 }

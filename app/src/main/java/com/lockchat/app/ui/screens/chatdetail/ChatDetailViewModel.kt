@@ -3,6 +3,7 @@ package com.lockchat.app.ui.screens.chatdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lockchat.app.data.notification.MessageNotifier
 import com.lockchat.app.data.repository.MensajeRepositoryImpl
 import com.lockchat.app.data.transport.TransportManager
 import com.lockchat.app.domain.model.MessageStatus
@@ -29,10 +30,16 @@ class ChatDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contactRepository: ContactRepository,
     private val mensajeRepository: MensajeRepositoryImpl,
-    private val transportManager: TransportManager
+    private val transportManager: TransportManager,
+    private val messageNotifier: MessageNotifier
 ) : ViewModel() {
 
     private val contactId: String = checkNotNull(savedStateHandle["contactId"])
+
+    init {
+        // Marcar este chat como activo para suprimir notificaciones mientras está abierto
+        messageNotifier.setActiveChat(contactId)
+    }
 
     private val _inputText = MutableStateFlow("")
     private val _isSending = MutableStateFlow(false)
@@ -80,35 +87,40 @@ class ChatDetailViewModel @Inject constructor(
             _isSending.value = true
             _inputText.value = ""
 
-            // 1. Persistir en Room como SENDING — obtener el msgId generado
-            val saveResult = mensajeRepository.sendMessage(contactId, content)
-            val msgId = saveResult.getOrNull()
+            try {
+                // 1. Persistir en Room como SENDING — obtener el msgId generado
+                val saveResult = mensajeRepository.sendMessage(contactId, content)
+                val msgId = saveResult.getOrNull()
 
-            // 2. Enviar via transport (BLE o LoRa)
-            val transportResult = transportManager.sendMessage(contactId, content)
+                // 2. Enviar via transport (BLE o LoRa)
+                val transportResult = transportManager.sendMessage(contactId, content)
 
-            // 3. Actualizar status en Room según resultado del transport
-            if (msgId != null) {
+                // 3. Actualizar status en Room según resultado del transport
+                if (msgId != null) {
+                    transportResult.fold(
+                        onSuccess = {
+                            mensajeRepository.updateStatus(msgId, MessageStatus.SENT)
+                        },
+                        onFailure = {
+                            mensajeRepository.updateStatus(msgId, MessageStatus.FAILED)
+                        }
+                    )
+                }
+
+                // 4. Actualizar UI
                 transportResult.fold(
-                    onSuccess = {
-                        mensajeRepository.updateStatus(msgId, MessageStatus.SENT)
-                    },
-                    onFailure = {
-                        mensajeRepository.updateStatus(msgId, MessageStatus.FAILED)
+                    onSuccess = { /* ok */ },
+                    onFailure = { e ->
+                        _sendError.value = e.message
                     }
                 )
+            } catch (e: Exception) {
+                // Cualquier excepción no capturada por Result (CancellationException, etc.)
+                _sendError.value = e.message ?: "Error inesperado al enviar"
+            } finally {
+                // SIEMPRE resetear isSending, incluso si hubo excepción
+                _isSending.value = false
             }
-
-            // 4. Actualizar UI
-            transportResult.fold(
-                onSuccess = {
-                    _isSending.value = false
-                },
-                onFailure = { e ->
-                    _sendError.value = e.message
-                    _isSending.value = false
-                }
-            )
         }
     }
 
@@ -117,5 +129,11 @@ class ChatDetailViewModel @Inject constructor(
         viewModelScope.launch {
             mensajeRepository.markAllRead(contactId)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Al salir del chat, permitir nuevamente notificaciones de este contacto
+        messageNotifier.setActiveChat(null)
     }
 }
